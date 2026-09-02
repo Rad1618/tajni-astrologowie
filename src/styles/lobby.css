@@ -1,0 +1,104 @@
+.lobbyTitle {
+    width: 100%;
+    margin-top: 8px;
+    font-weight: 600;
+    font-size: large;
+    text-align: center;
+}
+
+.lobbyButtonStart {
+    height: 40px;
+    width: 80px;
+    background-color: #bab9c5;
+    border: solid 1px #9392a1;
+    color: #000;
+    cursor: pointer;
+}
+
+.lobbyButtonStart:disabled {
+    cursor: not-allowed;
+    background-color: #a6a6a6;
+    border: solid 1px #9392a1;
+    color: #585858;
+}
+
+.lobbyRolesGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.lobbyRole {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: solid #000 1px;
+    background-color: #f8f7fc;
+    text-align: center;
+    align-items: center;
+    font-size: small;
+    padding-bottom: 4px;
+}
+
+.lobbyRoleTop {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.lobbyRoleSelector {
+    display: flex;
+    flex-direction: row;
+    margin-top: 12px;
+    align-content: center;
+    justify-content: center;
+}
+
+.lobbySelectorButton {
+    height: 32px;
+    width: 32px;
+    background-color: #bab9c5;
+    border: solid 1px #9392a1;
+    color: #000;
+    cursor: pointer;
+}
+
+.lobbySelectorNumber {
+    display: inline-block;
+    font-size: larger;
+    line-height: 32px;
+    height: 32px;
+    width: 20px;
+}
+
+.roleName {
+    font-weight: 600;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    text-decoration: underline;
+}
+
+.roleSide {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.roleAstrolog {
+    color: #f00;
+}
+
+.roleTime {
+    font-weight: 600;
+}
+
+.roleDesc {
+    padding: 0px 10px 4px 10px;
+    border-bottom: dashed 1px #000;
+}
+
+.roleLore {
+    font-style: italic;
+    padding: 0px 10px;
+    margin-bottom: 4px;
+}

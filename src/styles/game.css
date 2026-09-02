@@ -1,0 +1,162 @@
+.gameWin {
+    width: 100%;
+    font-size: 2em;
+    font-weight: 600;
+    text-shadow: #0800ff 1px 0 3px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.gamePlayerData {
+    padding: 4px;
+    border: solid 1px #000;
+    border-radius: 2px;
+    margin-top: 10px;
+    margin-bottom: 8px;
+    width: 280px;
+}
+
+.gameSideAstrolog {
+    color: #f00;
+}
+
+.gameActionContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    border: solid 1px #000;
+    border-radius: 2px;
+    margin-bottom: 8px;
+    padding: 4px;
+    align-items: center;
+}
+
+.gameBoardGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+}
+
+.gameSeat {
+    display: flex;
+    flex-direction: column;
+    min-height: 96px;
+    border: solid 1px #000;
+    background-color: #f8f7fc;
+    padding: 4px;
+}
+
+.gameSeatNameContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    margin-left: 8px;
+}
+
+.gameSeatName {
+    color: #000;
+}
+
+.gameSeatNameRemoved {
+    color: #888;
+    text-decoration: line-through;
+}
+
+.gameVoteTrue {
+    width: 16px;
+    height: 16px;
+    background-color: #0f0;
+    border-radius: 999px;
+}
+
+.gameVoteFalse {
+    width: 16px;
+    height: 16px;
+    background-color: #f00;
+    border-radius: 999px;
+}
+
+.gameButton {
+    background-color: #bab9c5;
+    border: solid 1px #9392a1;
+    color: #000;
+    margin: 4px;
+    cursor: pointer;
+}
+
+.gameActionSelectionFalse {
+    background-color: rgb(252, 99, 99);
+    color: #000;
+}
+
+.gameActionSelectionTrue {
+    background-color: rgb(118, 251, 118);
+    color: #000;
+}
+
+.gameTextArea {
+    min-height: 32px;
+    resize: vertical;
+}
+
+.gameBoardsContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+}
+
+.gameBoard {
+    height: 200px;
+    width: 100%;
+    border: solid 1px #000;
+    background-color: #f8f7fc;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.gameBoardName {
+    width: 50%;
+    border: solid 1px #000;
+    background-color: #ebe8f5;
+    text-align: center;
+    align-self: center;
+}
+
+.gameBoardContent {
+    display: flex;
+    flex-direction: column-reverse;
+    overflow: auto;
+    width: 100%;
+    min-height: 50px;
+}
+
+.gameBoardMessage {
+    border-bottom: solid 1px #000;
+}
+
+.gameBoardTextAreaContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+}
+
+.gameBoardTextAreaInfo {
+    height: 20px;
+    width: 120px;
+    border: solid 1px #000;
+    margin-left: 4px;
+    text-align: center;
+}
+
+.gameBoardTextArea {
+    height: 20px;
+    width: 100%;
+    resize: none;
+}

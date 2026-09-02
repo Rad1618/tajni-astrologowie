@@ -1,0 +1,35 @@
+.sidebarContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background-color: #ffffff;
+    border-right: solid 1px #c8cae7;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    padding: 4px;
+    font-size: 0.9rem;
+}
+
+.sidebarAdminContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+}
+
+.sidebarAdmin {
+    cursor: pointer;
+    border-radius: 999px;
+    height: 16px;
+    width: 16px;
+    background-color: #f00;
+}
+
+.sidebarAdminActive {
+    cursor: pointer;
+    border-radius: 999px;
+    height: 16px;
+    width: 16px;
+    background-color: #0f0;
+}
