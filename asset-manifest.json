@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/tajni-astrologowie/static/css/main.5e6aae88.css",
-    "main.js": "/tajni-astrologowie/static/js/main.d00195c4.js",
+    "main.css": "/tajni-astrologowie/static/css/main.6c44732b.css",
+    "main.js": "/tajni-astrologowie/static/js/main.b0f3322a.js",
     "static/js/453.2f4fedd6.chunk.js": "/tajni-astrologowie/static/js/453.2f4fedd6.chunk.js",
     "index.html": "/tajni-astrologowie/index.html",
-    "main.5e6aae88.css.map": "/tajni-astrologowie/static/css/main.5e6aae88.css.map",
-    "main.d00195c4.js.map": "/tajni-astrologowie/static/js/main.d00195c4.js.map",
+    "main.6c44732b.css.map": "/tajni-astrologowie/static/css/main.6c44732b.css.map",
+    "main.b0f3322a.js.map": "/tajni-astrologowie/static/js/main.b0f3322a.js.map",
     "453.2f4fedd6.chunk.js.map": "/tajni-astrologowie/static/js/453.2f4fedd6.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.5e6aae88.css",
-    "static/js/main.d00195c4.js"
+    "static/css/main.6c44732b.css",
+    "static/js/main.b0f3322a.js"
   ]
 }
