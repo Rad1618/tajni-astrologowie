@@ -14,13 +14,19 @@ function App() {
   const [roomN, setRoom] = useState(null);
   const [messages, setMessages] = useState([]);
   const [win, setWin] = useState("None");
-  const BOTS = 6;
+  const [options, setOptions] = useState({
+    bots: 0,
+    time: 15,
+    bonusTime: 3,
+    gorszyObozny: false,
+    astroLOG: 3,
+  });
 
   const [me, setMe] = useState(
     {
       color: "red",
       username: "noname",
-      admin: false,
+      dev: false,
     }
   );
 
@@ -35,6 +41,8 @@ function App() {
   meRef.current = me;
   const gameRef = useRef();
   gameRef.current = gameState;
+  const optionsRef = useRef();
+  optionsRef.current = options;
 
   function connectToScaledrone() {
     meRef.current.color = "green";
@@ -68,12 +76,20 @@ function App() {
         if ((data.data?.version ?? -1) <= (gameRef.current?.version ?? -2))
           return;
         console.log(data.data);
+        const winStatus = checkWinCondition(data.data);
+        setWin(winStatus);
+        if (winStatus !== "None")
+          data.data.ended = true;
         setGameState(data.data ?? {});
-        setWin(checkWinCondition(data.data));
       }
       else if (data.type === "members")
       {
         setMembers(data.data);
+      }
+      else if (data.type === "options")
+      {
+        console.log(data.data);
+        setOptions(data.data);
       }
     });
     room.on('members', members => {
@@ -81,6 +97,11 @@ function App() {
     });
     room.on('member_join', member => {
       setMembers([...membersRef.current, member]);
+      const message = {type: "options", data: optionsRef.current};
+        drone.publish({
+          room: "observable-room-" + roomN,
+          message
+        });
       if (gameRef.current != null)
       {
         const message = {type: "game", data: gameRef.current};
@@ -114,29 +135,42 @@ function App() {
     setMe({...me, username: userName});
   }
 
-  function onGameStateChange(gameState)
+  function onGameStateChange(newGameState)
   {
-    gameState.version += 1;
+    newGameState.version += 1;
     if (drone === null)
       return;
-    const message = {type: "game", data: gameState};
+    if (newGameState?.orders && newGameState.orders.length === 0 && !newGameState?.endTime)
+      newGameState.endTime = new Date().getTime() + options.time*60*1000;
+    const message = {type: "game", data: newGameState};
     drone.publish({
       room: "observable-room-" + roomN,
       message
     });
   }
 
-  function switchAdmin()
+  function onOptionsChange(newOptions)
   {
-    if (!me?.admin)
+    if (drone === null || gameState !== null)
+      return;
+    const message = {type: "options", data: newOptions};
+    drone.publish({
+      room: "observable-room-" + roomN,
+      message
+    });
+  }
+
+  function switchDev()
+  {
+    if (!me?.dev)
     {
-      const password = prompt("Admin password:");
+      const password = prompt("Dev password:");
       const hash = sha256(password).toString();
       // if (hash != '523435ae129b2967a8488fcd056d4f82e5b7006d7e6b8a9c5f77e1060a7b5508')
       //   return;
     }
-    setMe({...me, admin: !me?.admin});
-    const newMembers = members.map(m => m.id === me.id ? {...m, admin: !(m?.admin)} : m);
+    setMe({...me, dev: !me?.dev});
+    const newMembers = members.map(m => m.id === me.id ? {...m, dev: !(m?.dev)} : m);
     const message = {type: "members", data: newMembers};
     drone.publish({
       room: "observable-room-" + roomN,
@@ -146,6 +180,13 @@ function App() {
 
   function checkWinCondition(gameState)
   {
+    if (gameState?.endTime)
+    {
+      const d = new Date();
+      const remainingTime = gameState.endTime - d.getTime();
+      if (remainingTime < 0)
+        return "Astrologs";
+    }
     let remainingAstrologs = 0;
     let remainingAstronoms = 0;
     let removedAstronoms = 0;
@@ -182,18 +223,18 @@ function App() {
           {roomN ? <>
           <Members members={members} me={me} room={roomN}/>
           <div className="appGrid">
-            <SideBar me={me} switchAdmin={switchAdmin}/>
+            <SideBar me={me} switchDev={switchDev} options={options} setOptions={onOptionsChange}/>
             {
               gameState ?
-              <GamePage gameState={gameState} setGameState={onGameStateChange} me={me} win={win} checkWin={checkWinCondition}/>
+              <GamePage gameState={gameState} setGameState={onGameStateChange} me={me} win={win} checkWin={checkWinCondition} options={options}/>
               :
-              <Lobby gameState={gameState} setGameState={onGameStateChange} members={members} bots={BOTS} />
+              <Lobby gameState={gameState} setGameState={onGameStateChange} members={members} options={options} />
             }
           </div></> : 
           <EntrancePage setRoom={setNames}/>
           }
         </div>
-        <VotingModal gameState={gameState} setGameState={onGameStateChange} me={me} bots={BOTS}/>
+        <VotingModal gameState={gameState} setGameState={onGameStateChange} me={me} options={options}/>
       </main>
     </div>
   );

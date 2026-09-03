@@ -12,13 +12,17 @@
     font-size: 0.9rem;
 }
 
-.sidebarAdminContainer {
+.sidebarBoolContainer {
     display: flex;
     flex-direction: row;
+    justify-content: center;
     gap: 2px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-bottom: solid 1px #000;
 }
 
-.sidebarAdmin {
+.sidebarBool {
     cursor: pointer;
     border-radius: 999px;
     height: 16px;
@@ -26,10 +30,28 @@
     background-color: #f00;
 }
 
-.sidebarAdminActive {
+.sidebarBoolActive {
     cursor: pointer;
     border-radius: 999px;
     height: 16px;
     width: 16px;
     background-color: #0f0;
+}
+
+.sidebarStandardContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    gap: 2px;
+    padding-bottom: 4px;
+    border-bottom: solid 1px #000;
+}
+
+.sidebarStandardButton {
+    background-color: #bab9c5;
+    border: solid 1px #9392a1;
+    color: #000;
+    margin: 2px;
+    cursor: pointer;
+    width: 24px;
 }

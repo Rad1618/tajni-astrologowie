@@ -79,6 +79,11 @@
     text-decoration: underline;
 }
 
+.roleNameRed {
+    color: #f00;
+    text-decoration: line-through;
+}
+
 .roleSide {
     margin-top: 4px;
     margin-bottom: 4px;

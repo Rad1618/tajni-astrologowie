@@ -13,6 +13,7 @@
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-scripts": "5.0.1",
+    "usehooks-ts": "^3.1.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

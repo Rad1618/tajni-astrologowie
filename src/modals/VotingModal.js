@@ -1,13 +1,13 @@
 import '../styles/modals.css';
 
-export default function VotingModal({gameState, setGameState, me, bots})
+export default function VotingModal({gameState, setGameState, me, options})
 {
   const isActive = gameState?.voting?.active ?? false;
   const canVote = (!gameState?.seats.filter((s) => s.id === me.id)[0]?.removed || false) ?? false;
   const alreadyVoted = ((me?.id || null) in (gameState?.voting?.votes || {})) ?? false;
   const targetSeat = gameState?.voting?.target ? gameState.seats.find(s => s.id === gameState.voting.target) || {} : {};
 
-  const removed = gameState?.seats.filter((s) => s?.removed ?? false).length;
+  const removed = gameState?.seats.filter((s) => (s?.removed && !s?.bot) ?? false).length;
 
   function voteSucceded(votes)
   {
@@ -20,16 +20,21 @@ export default function VotingModal({gameState, setGameState, me, bots})
   {
     e.preventDefault();
     let seats = gameState?.seats ?? [];
-    const votes = {
+    let votes = {
       ...gameState?.voting?.votes,
       [me.id]: vote,
     }
     const events = gameState?.events ?? [];
-    const finalised = Object.keys(votes).length >= gameState.seats.length - bots - removed;
+    const finalised = Object.keys(votes).length >= gameState.seats.length - options.bots - removed;
+    let endTime = gameState.endTime;
     if (finalised)
     {
+      votes = botVoting(votes);
+      const d = new Date();
+      endTime += d.getTime() - gameState.voting.startTime;
       if (voteSucceded(votes))
       {
+        endTime += options.bonusTime * 60*1000;
         events.push({text: targetSeat.username + " zostaje wyrzucony z obozu.", visibility: "all"});
         seats = seats.map(s => {
           if (s.id === targetSeat.id)
@@ -40,7 +45,7 @@ export default function VotingModal({gameState, setGameState, me, bots})
       else
         events.push({text: targetSeat.username +  " zostaje na obozie.", visibility: "all"});
     }
-    setGameState({...gameState, seats: seats,
+    setGameState({...gameState, seats: seats, endTime: endTime,
       voting:
       {
         ...gameState?.voting ?? {},
@@ -50,6 +55,22 @@ export default function VotingModal({gameState, setGameState, me, bots})
       },
       events: events,
     });
+  }
+
+  function botVoting(votes)
+  {
+    const astronoms = gameState.seats.filter(s => s.side === "astronom" && !s?.bot);
+    const astrologs = gameState.seats.filter(s => s.side === "astrolog" && !s?.bot);
+    const bots = gameState.seats.filter(s => s?.bot);
+    bots.forEach((b) => {
+      let humanId = null;
+      if (b.side === "astrolog" && astrologs.length > 0)
+        humanId = astrologs[Math.floor(Math.random() * astrologs.length)].id;
+      else
+        humanId = astronoms[Math.floor(Math.random() * astronoms.length)].id;
+      votes[b.id] = votes?.[humanId] ?? true;
+    });
+    return votes;
   }
 
   if (!isActive || alreadyVoted || !canVote)

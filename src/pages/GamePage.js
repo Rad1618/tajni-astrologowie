@@ -1,12 +1,26 @@
 import { useState, useEffect } from "react";
+import { useInterval } from "usehooks-ts"
 import GameBoard from "../components/GameBoard";
 import '../styles/game.css';
 
-export default function GamePage({gameState, setGameState, me, win, checkWin})
+export default function GamePage({gameState, setGameState, me, win, checkWin, options})
 {
   const [seat, setSeat] = useState(-1);
-  const [role, setRole] = useState(me?.admin ? "Admin" : "User");
+  const [role, setRole] = useState(me?.dev ? "Dev" : "User");
   const [astroLOG, setAstroLOG] = useState("");
+  const [remainingTime, setRemainingTime] = useState(0);
+  useInterval(updateRemainingTime, 1000);
+  const d = new Date();
+
+  function updateRemainingTime()
+  {
+    let newTime = (gameState?.endTime ?? d.getTime()) - d.getTime();
+    if (!!gameState?.voting?.active)
+      newTime += d.getTime() - gameState.voting.startTime;
+    setRemainingTime(Math.max(0, newTime));
+    if (newTime < 0 && !gameState.ended)
+      setGameState({...gameState, ended: true});
+  }
   
   useEffect(() => {
     if (!gameState?.seats)
@@ -17,33 +31,13 @@ export default function GamePage({gameState, setGameState, me, win, checkWin})
       {
         setSeat(i);
         setRole(gameState.seats[i].role);
-        if (!gameState.seats[i].botAdmin)
-          return;
-      }
-    }
-    if (gameState.orders.length === 0)
-      return;
-    for (let i = 0; i < gameState.seats.length; i++)
-    {
-      // checking if bot player has now action
-      if (gameState.seats[i].bot && gameState.orders[0] === gameState.seats[i].order)
-      {
-        botAction();
-        return;
       }
     }
   }, [gameState])
 
-  function botAction()
-  {
-    let orders = [...gameState?.orders] ?? [];
-    orders.splice(0, 1);
-    setGameState({...gameState, orders: orders});
-  }
-
   function filterEvents(event, mySeat)
   {
-    if (me?.admin || event.visibility === "all")
+    if (me?.dev || event.visibility === "all")
       return true;
     if (!mySeat)
       return false;
@@ -59,7 +53,7 @@ export default function GamePage({gameState, setGameState, me, win, checkWin})
     e.preventDefault();
     if (!gameState)
       return;
-    if (astroLOG.length === 0 || astroLOG.length > 20 || (gameState.seats[seat]?.astroLOGMessages ?? 0) >= 3)
+    if (astroLOG.length === 0 || astroLOG.length > 20 || (gameState.seats[seat]?.astroLOGMessages ?? 0) >= options.astroLOG)
       return;
     const newState = {...gameState};
     newState.astroLOG = [...newState?.astroLOG ?? [], {name: newState.seats[seat].username, text: astroLOG}];
@@ -77,8 +71,9 @@ export default function GamePage({gameState, setGameState, me, win, checkWin})
       <div className="gamePlayerData">
         <div>Twoja rola: {role}</div>
         <div>Twoja strona: <span className={(seat !== -1 ? (gameState.seats[seat]?.side === "astrolog" ? "gameSideAstrolog" : undefined) : undefined)}>{gameState.seats[seat]?.side ?? "-"}</span></div>
+        <div>Pozostały czas: {Math.floor(remainingTime/60000)}:{Math.floor(remainingTime/1000)%60 < 10 ? "0" : ""}{Math.floor(remainingTime/1000)%60}</div>
       </div>
-      <GameBoard gameState={gameState} setGameState={setGameState} seat={seat} me={me} checkWin={checkWin}/>
+      <GameBoard gameState={gameState} setGameState={setGameState} seat={seat} me={me} checkWin={checkWin} options={options}/>
       <div className="gameBoardsContainer">
         <div className="gameBoard">
           <div className="gameBoardName">Tablica ogłoszeń</div>
@@ -90,7 +85,7 @@ export default function GamePage({gameState, setGameState, me, win, checkWin})
           </div>
         </div>
         <div className="gameBoard">
-          {(me?.admin || (gameState.seats[seat]?.side === "astrolog" && !gameState.seats[seat]?.manipulated)) && <>
+          {(me?.dev || (gameState.seats[seat]?.side === "astrolog" && !gameState.seats[seat]?.manipulated)) && <>
           <div className="gameBoardName">AstroLOG Codzienny</div>
           <div className="gameBoardContent">
             {gameState.astroLOG && gameState.astroLOG.map((m, idx) => 
@@ -100,7 +95,7 @@ export default function GamePage({gameState, setGameState, me, win, checkWin})
           </div>
           <div className="gameBoardTextAreaContainer">
             <textarea className="gameBoardTextArea" onChange={(e) => setAstroLOG(e.target.value)}></textarea>
-            <div className="gameBoardTextAreaInfo">{gameState.seats[seat]?.astroLOGMessages ?? 0}/3 {astroLOG.length}/20</div>
+            <div className="gameBoardTextAreaInfo">{gameState.seats[seat]?.astroLOGMessages ?? 0}/{options.astroLOG} {astroLOG.length}/20</div>
             <button className="gameButton" onClick={sendMessage}>Wyślij</button>
           </div>
           </>}
