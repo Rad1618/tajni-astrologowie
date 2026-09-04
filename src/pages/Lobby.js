@@ -1,4 +1,5 @@
 import { useState } from "react";
+import OftenUsedSetups from "../modals/OftenUsedSetups";
 import styles from "../styles/lobby.css"
 
 const ROLES = [
@@ -25,36 +26,43 @@ const ROLES = [
   {name: "Chemik", side: "astronom", order: -1, desc: "Wskaż dwie osoby. Dowiesz się, czy jest wśród nich co najmniej jedna zła.", lore: "Co tak pachnie?"},
   {name: "Ekonomista", side: "astronom", order: 260, desc: "Poznaje stronę (lewą lub prawą), po której jest więcej astrologów.", lore: "Da się to jakoś policzyć."},
   {name: "Astronom sferyczny", side: "astronom", order: 270, desc: "Poznaj stronę, w którą jest najbliższy astrolog.", lore: "To półkole jest zdecydowanie bardziej podejrzane."},
-  // {name: "Kierowca", side: "astronom", order: 280, desc: "Zawsze wie, że jest niewyspany. Niewyspanie na niego nie wpływa.", lore: "8 godzin na SORze i jeszcze trzeba wrócić."},
+  {name: "Kierowca", side: "astronom", order: 280, desc: "Zawsze wie, czy jest niewyspany. Mówi prawdę nawet będąc niewyspanym.", lore: "8 godzin na SORze i jeszcze trzeba wrócić."},
 
   // {name: "Wych", side: "astronom", order: 0, desc: "", lore: ""},
 ]
 
 const noBotRoles = ["Komendant", "Zły oboźny", "Manipulator", "Bydło"];
 
-export default function Lobby({gameState, setGameState, members, options})
+export default function Lobby({gameState, setGameState, members, options, setOptions})
 {
-  const [selectedRoles, setSelectedRoles] = useState([]);
   const [bydloCount, setBydloCount] = useState(0);
   const devs = members ? members.filter(m => m?.dev).length : 0;
+
+  const [setupsModalOpen, setSetupsModalOpen] = useState(false);
+
+  function setSelectedRoles(roles)
+  {
+    console.log(roles);
+    setOptions({...options, selectedRoles: roles});
+  }
 
   function createGame()
   {
     if (!members)
       return;
-    if (selectedRoles.length + bydloCount < members.length + options.bots - devs)
+    if (options.selectedRoles.length + bydloCount < members.length + options.bots - devs)
       return;
-    let overflow = selectedRoles.length + bydloCount - members.length - options.bots + devs;
+    let overflow = options.selectedRoles.length + bydloCount - members.length - options.bots + devs;
     let astrologs = 0;
-    for (let i = 0; i < selectedRoles.length; i++)
+    for (let i = 0; i < options.selectedRoles.length; i++)
     {
-      if (selectedRoles[i].side === "astrolog")
+      if (options.selectedRoles[i].side === "astrolog")
         astrologs++;
     }
     // There cannot be more astrologs than available seats
     if (astrologs > members.length + options.bots)
       return;
-    let remainingRoles = [...selectedRoles];
+    let remainingRoles = [...options.selectedRoles];
     let removedRoles = [];
     while (overflow > 0)
     {
@@ -67,15 +75,24 @@ export default function Lobby({gameState, setGameState, members, options})
       remainingRoles.splice(id, 1);
     }
 
-    const newGame = {version: 0, seats: [], voting: {active: false, finalised: false}, orders: [], events: [], astrologsCount: astrologs, removedRoles: removedRoles};
-    const allRolesText = selectedRoles.reduce((text, r) => {return text + r.name + ", "}, "").slice(0, -2);
+    const newGame = {
+      version: 0,
+      seats: [],
+      voting: {active: false, finalised: false},
+      orders: [],
+      events: [],
+      astrologsCount: astrologs,
+      removedRoles: removedRoles,
+      unoccupiedRoles: removedRoles
+    };
+    const allRolesText = options.selectedRoles.reduce((text, r) => {return text + r.name + ", "}, "").slice(0, -2);
     newGame.events.push({text: "Dostępne role: " + allRolesText, visibility: "all"});
     if (removedRoles.length > 0)
     {
       const removedRolesText = removedRoles.reduce((text, r) => {return text + r.name + ", "}, "").slice(0, -2);
       newGame.events.push({text: "Na obozie nieobecni są: " + removedRolesText, visibility: "astrolodzy"});
     }
-    newGame.allRoles = [...new Set(selectedRoles)];
+    newGame.allRoles = [...new Set(options.selectedRoles)];
     let bydlo = bydloCount;
     while (bydlo > 0)
     {
@@ -160,9 +177,9 @@ export default function Lobby({gameState, setGameState, members, options})
         setBydloCount(prev => prev + 1);
       return;
     }
-    if (role.order != null && role.order >= 0 && selectedRoles.filter(r => r.name === role.name).length >= 10)
+    if (role.order != null && role.order >= 0 && options.selectedRoles.filter(r => r.name === role.name).length >= 10)
       return;
-    setSelectedRoles(prev => [...prev, role]);
+    setSelectedRoles([...options.selectedRoles, role]);
   }
   
   function removeRole(role)
@@ -173,11 +190,11 @@ export default function Lobby({gameState, setGameState, members, options})
         setBydloCount(prev => prev - 1);
       return;
     }
-    const toRemove = selectedRoles.filter(r => r.name === role.name);
+    const toRemove = options.selectedRoles.filter(r => r.name === role.name);
     if (toRemove.length === 0)
       return;
-    const toRemoveId = selectedRoles.indexOf(toRemove[0]);
-    let roles = [...selectedRoles];
+    const toRemoveId = options.selectedRoles.indexOf(toRemove[0]);
+    let roles = [...options.selectedRoles];
     roles.splice(toRemoveId, 1);
     setSelectedRoles(roles);
   }
@@ -186,12 +203,16 @@ export default function Lobby({gameState, setGameState, members, options})
     return null;
 
   return (
+    <>
     <div>
       <div className="lobbyTitle">Game Lobby</div>
-      <button className="lobbyButtonStart" onClick={createGame} disabled={selectedRoles.length + bydloCount < members.length + options.bots - devs}>Start</button>
-      <div>Wybrane role: {selectedRoles.length + bydloCount} / {members.length + options.bots - devs}</div>
+      <div className="lobbyTop">
+        <button className="lobbyButtonStart" onClick={createGame} disabled={options.selectedRoles.length + bydloCount < members.length + options.bots - devs}>Start</button>
+        <button className="lobbyButtonStart" onClick={() => setSetupsModalOpen(true)}>Często Używane Setupy</button>
+      </div>
+      <div>Wybrane role: {options.selectedRoles.length + bydloCount} / {members.length + options.bots - devs}</div>
       <div className="lobbyRolesGrid">
-        {ROLES.map(role => <div key={role.name} className="lobbyRole">
+        {ROLES.map(role => <div key={role.name} className={`lobbyRole ${options.selectedRoles.filter(r => r.name === role.name).length === 0 ? "lobbyRoleInactive" : ""}`}>
           <div className="lobbyRoleTop">
             <p className={`roleName ${options.bots > 0 && noBotRoles.includes(role.name) ? "roleNameRed" : ""}`}>{role.name}</p>
             <p className={"roleSide" && (role.side === "astrolog" ? styles.roleAstrolog : undefined)}>{role.side}</p>
@@ -201,11 +222,13 @@ export default function Lobby({gameState, setGameState, members, options})
           </div>
           <div className="lobbyRoleSelector">
             <button className="lobbySelectorButton" onClick={() => removeRole(role)}>-</button>
-            <span className="lobbySelectorNumber">{role.name === "Bydło" ? bydloCount : selectedRoles.filter(r => r.name === role.name).length}</span>
+            <span className="lobbySelectorNumber">{role.name === "Bydło" ? bydloCount : options.selectedRoles.filter(r => r.name === role.name).length}</span>
             <button className="lobbySelectorButton" onClick={() => addRole(role)}>+</button>
           </div>
         </div>)}
       </div>
     </div>
+    <OftenUsedSetups open={setupsModalOpen} setOpen={setSetupsModalOpen} options={options} setOptions={setOptions} ROLES={ROLES}/>
+    </>
   );
 }

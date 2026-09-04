@@ -14,6 +14,8 @@ export default function GamePage({gameState, setGameState, me, win, checkWin, op
 
   function updateRemainingTime()
   {
+    if (!options.timeOn)
+      return;
     let newTime = (gameState?.endTime ?? d.getTime()) - d.getTime();
     if (!!gameState?.voting?.active)
       newTime += d.getTime() - gameState.voting.startTime;
@@ -71,7 +73,7 @@ export default function GamePage({gameState, setGameState, me, win, checkWin, op
       <div className="gamePlayerData">
         <div>Twoja rola: {role}</div>
         <div>Twoja strona: <span className={(seat !== -1 ? (gameState.seats[seat]?.side === "astrolog" ? "gameSideAstrolog" : undefined) : undefined)}>{gameState.seats[seat]?.side ?? "-"}</span></div>
-        <div>Pozostały czas: {Math.floor(remainingTime/60000)}:{Math.floor(remainingTime/1000)%60 < 10 ? "0" : ""}{Math.floor(remainingTime/1000)%60}</div>
+        {options.timeOn && <div>Pozostały czas: {Math.floor(remainingTime/60000)}:{Math.floor(remainingTime/1000)%60 < 10 ? "0" : ""}{Math.floor(remainingTime/1000)%60}</div>}
       </div>
       <GameBoard gameState={gameState} setGameState={setGameState} seat={seat} me={me} checkWin={checkWin} options={options}/>
       <div className="gameBoardsContainer">

@@ -6,9 +6,17 @@
     text-align: center;
 }
 
+.lobbyTop {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    justify-content: center;
+    padding: 10px 0px;
+}
+
 .lobbyButtonStart {
     height: 40px;
-    width: 80px;
+    width: 120px;
     background-color: #bab9c5;
     border: solid 1px #9392a1;
     color: #000;
@@ -34,11 +42,17 @@
     flex-direction: column;
     justify-content: space-between;
     border: solid #000 1px;
-    background-color: #f8f7fc;
+    background-color: #eeebf9;
     text-align: center;
     align-items: center;
     font-size: small;
     padding-bottom: 4px;
+}
+
+.lobbyRoleInactive {
+    color: #919191;
+    border: solid #919191 1px;
+    background-color: #f8f7fc;
 }
 
 .lobbyRoleTop {

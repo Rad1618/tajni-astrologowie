@@ -16,10 +16,12 @@ function App() {
   const [win, setWin] = useState("None");
   const [options, setOptions] = useState({
     bots: 0,
+    timeOn: true,
     time: 15,
     bonusTime: 3,
     gorszyObozny: false,
     astroLOG: 3,
+    selectedRoles: [],
   });
 
   const [me, setMe] = useState(
@@ -73,6 +75,8 @@ function App() {
       }
       else if (data.type === "game")
       {
+        if (data.data === "Reset")
+          setGameState(null);
         if ((data.data?.version ?? -1) <= (gameRef.current?.version ?? -2))
           return;
         console.log(data.data);
@@ -125,6 +129,7 @@ function App() {
     if (drone === null) {
       connectToScaledrone();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomN]);
 
   function setNames(roomName, userName)
@@ -137,11 +142,14 @@ function App() {
 
   function onGameStateChange(newGameState)
   {
-    newGameState.version += 1;
     if (drone === null)
       return;
-    if (newGameState?.orders && newGameState.orders.length === 0 && !newGameState?.endTime)
-      newGameState.endTime = new Date().getTime() + options.time*60*1000;
+    if (newGameState && newGameState !== "Reset")
+    {
+      newGameState.version += 1;
+      if (newGameState?.orders && newGameState.orders.length === 0 && !newGameState?.endTime)
+        newGameState.endTime = new Date().getTime() + options.time*60*1000;
+    }
     const message = {type: "game", data: newGameState};
     drone.publish({
       room: "observable-room-" + roomN,
@@ -166,8 +174,8 @@ function App() {
     {
       const password = prompt("Dev password:");
       const hash = sha256(password).toString();
-      // if (hash != '523435ae129b2967a8488fcd056d4f82e5b7006d7e6b8a9c5f77e1060a7b5508')
-      //   return;
+      if (hash !== '523435ae129b2967a8488fcd056d4f82e5b7006d7e6b8a9c5f77e1060a7b5508')
+        return;
     }
     setMe({...me, dev: !me?.dev});
     const newMembers = members.map(m => m.id === me.id ? {...m, dev: !(m?.dev)} : m);
@@ -223,12 +231,12 @@ function App() {
           {roomN ? <>
           <Members members={members} me={me} room={roomN}/>
           <div className="appGrid">
-            <SideBar me={me} switchDev={switchDev} options={options} setOptions={onOptionsChange}/>
+            <SideBar me={me} switchDev={switchDev} options={options} setOptions={onOptionsChange} gameStarted={!!gameState} setGameState={onGameStateChange}/>
             {
               gameState ?
               <GamePage gameState={gameState} setGameState={onGameStateChange} me={me} win={win} checkWin={checkWinCondition} options={options}/>
               :
-              <Lobby gameState={gameState} setGameState={onGameStateChange} members={members} options={options} />
+              <Lobby gameState={gameState} setGameState={onGameStateChange} members={members} options={options} setOptions={onOptionsChange}/>
             }
           </div></> : 
           <EntrancePage setRoom={setNames}/>

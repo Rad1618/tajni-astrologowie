@@ -91,6 +91,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
     newSeats.push(gameState.seats[NormalisedSeat]);
     newSeats.push(null);
     setSeats(newSeats);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState, isUser]);
 
   useEffect(() => {
@@ -106,7 +107,11 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
             botAction(i, gameState.seats[i]);
           else
           {
-            const possibleRoles = gameState.allRoles.filter(r => r.side !== "astrolog" && r.name !== "Dinozaur");
+            let possibleRoles = []
+            if (!!gameState?.unoccupiedRoles)
+              possibleRoles = gameState.unoccupiedRoles.filter(r => r.side !== "astrolog" && r.name !== "Dinozaur");
+            if (possibleRoles.length === 0)
+              possibleRoles = gameState.allRoles.filter(r => r.side !== "astrolog" && r.name !== "Dinozaur");
             const randRole = possibleRoles[Math.floor(Math.random() * possibleRoles.length)].name;
             const targets = simulateTargetSelection(i, randRole);
             activateAction(targets, randRole, i, true);
@@ -150,6 +155,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState, seat])
 
   function botAction(botId, botSeat)
@@ -323,7 +329,13 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
       setActionText("Sprawdź, w którą stronę jest najbliższy astrolog (lub remis).");
       setConfirmButtonVisible(true);
     }
+    else if (role === "Kierowca")
+    {
+      setActionText("Dowiedz się, czy jesteś niewyspany (otrzymasz poprawną informację, chyba że jesteś Bydłem).");
+      setConfirmButtonVisible(true);
+    }
     setCanBeSelected(selection);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myAction, role]);
 
   function simulateTargetSelection(botSeat, botRole)
@@ -410,6 +422,9 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
     {
       newState.seats[seatA].botDone = true;
       newState.seats[seatA].eventRole = roleA;
+      const id = newState.unoccupiedRoles.findIndex(r => r.name === roleA);
+      if (id !== -1)
+        newState.unoccupiedRoles.splice(id, 1);
     }
     if (roleA === "Astrolog" || roleA === "Astrolog biurokratyczny")
     {
@@ -472,7 +487,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
     {
       newState.seats[seatA].visible = true;
       newState.seats[seatA].usedUp = true;
-      newState.events.push({text: newState.seats[seatA].username + " ujawnia się, jako " + mySeat.role, visibility: "all"});
+      newState.events.push({text: newState.seats[seatA].username + " ujawnia się, jako " + newState.seats[seatA].role, visibility: "all"});
       setGameState(newState);
     }
     else if (roleA === "Mini-Medyk")
@@ -557,7 +572,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         newState.seats[(seatA + 1) % newState.seats.length].role,
         newState.seats[(seatA - 1 + newState.seats.length) % newState.seats.length].role,
       ];
-      if (!lie || shouldGenerateFalseData(newState.seats[seatA]))
+      if (!lie && !shouldGenerateFalseData(newState.seats[seatA]))
         role = neighbours[Math.floor(Math.random() * 2)];
       else
       {
@@ -575,7 +590,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
       selectionA.forEach((s) => {
         if (!lie)
           newState.seats[s].sleepless = true;
-        if (!lie || shouldGenerateFalseData(newState.seats[seatA]))
+        if (!lie && !shouldGenerateFalseData(newState.seats[seatA]))
           newState.events.push({text: newState.seats[s].username + " to " + newState.seats[s].side + ".", visibility: seatId});
         else
           newState.events.push({text: newState.seats[s].username + " to " + (newState.seats[s].side === "astrolog" ? "astronom" : "astrolog") + ".", visibility: seatId});
@@ -772,12 +787,12 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
       let left = 0;
       for (let i = seatA + 1; i < seatA + 1 + reach; i++)
       {
-        if (newState.seats[i].side === "astrolog")
+        if (newState.seats[i % newState.seats.length].side === "astrolog")
           right++;
       }
       for (let i = seatA - 1 + newState.seats.length; i > seatA - 1 + newState.seats.length - reach; i--)
       {
-        if (newState.seats[i].side === "astrolog")
+        if (newState.seats[i % newState.seats.length].side === "astrolog")
           left++;
       }
       let result = right === left ? 0 : (right > left ? 1 : 2);
@@ -844,6 +859,18 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         newState.events.push({text: "Najbliższy astrolog znajduje się po lewej stronie.", visibility: seatId});
       else
         newState.events.push({text: "Najbliższy astrolog znajduje się po prawej stronie.", visibility: seatId});
+      if (newState.orders.length > 0)
+        newState.orders.splice(0, 1);
+      newState.seats[seatA].usedUp = true;
+      setGameState(newState);
+    }
+    else if (roleA === "Kierowca")
+    {
+      const status = lie !== (newState.seats[seatA]?.sleepless ?? false) !== (newState.seats[seatA]?.bydlo ?? false);
+      if (status)
+        newState.events.push({text: "Jesteś niewyspany.", visibility: seatId});
+      else
+        newState.events.push({text: "Nie jesteś niewyspany.", visibility: seatId});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;

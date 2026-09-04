@@ -65,6 +65,15 @@ Boty wykonują swoje akcje automatycznie na początku gry i dzielą się zdobyty
 
 Podczas głosowania, każdy bot głosuje, jak losowy człowiek w ich frakcji. Jeśli frakcja astrologów nie ma człowieka, boty głosują, jak losowy człowiek astronom.
 
+## Zabronione strategie
+
+Zabronione są wszelkie strategie dedukcji, które wymagają znajomości kodu programu, lub wiedzy zewnętrznej. Dotyczy to między innymi:
+
+1. Prób weryfikacji czyjejś roli na podstawie tego, czy umie zacytować precyzyjnie swoją wiadomość.
+2. Dedukcji stron botów na podstawie manipulacji przy pomocy głosowania.
+
+W związku z punktem 1. nie zaleca się również cytowania swoich wiadomości otrzymanych w związku z aktywacją roli.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

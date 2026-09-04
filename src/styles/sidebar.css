@@ -30,12 +30,20 @@
     background-color: #f00;
 }
 
+.sidebarBool:disabled {
+    cursor: no-drop;
+}
+
 .sidebarBoolActive {
     cursor: pointer;
     border-radius: 999px;
     height: 16px;
     width: 16px;
     background-color: #0f0;
+}
+
+.sidebarBoolActive:disabled {
+    cursor: no-drop;
 }
 
 .sidebarStandardContainer {
@@ -54,4 +62,31 @@
     margin: 2px;
     cursor: pointer;
     width: 24px;
+}
+
+.sidebarStandardButton:disabled {
+    cursor: no-drop;
+}
+
+.sidebarTriggerContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 2px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    border-bottom: solid 1px #000;
+}
+
+.sidebarTrigger {
+    cursor: pointer;
+    border-radius: 999px;
+    height: 16px;
+    width: 16px;
+    background-color: #bab9c5;
+    border: solid 1px #9392a1;
+}
+
+.sidebarTrigger:disabled {
+    cursor: no-drop;
 }
