@@ -21,7 +21,7 @@ wyrzuceniem. Część ról może użyć swojej zdolności w dowolnej chwili dnia
 
 Astronomowie wygrywają, jeśli wyrzucą z obozu wszystkich astrologów, zanim wygrają astrologowie.
 Astrologowie mogą wygrać na kilka sposobów:
-1. Wyrzucenie drugiego astrologa
+1. Wyrzucenie drugiego astronoma
 2. Uzyskanie takiej samej liczby astrologów i astronomów
 3. Upłynięcie czasu gry
 
