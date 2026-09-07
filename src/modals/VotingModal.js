@@ -34,7 +34,8 @@ export default function VotingModal({gameState, setGameState, me, options})
       endTime += d.getTime() - gameState.voting.startTime;
       if (voteSucceded(votes))
       {
-        endTime += options.bonusTime * 60*1000;
+        if (options.timeOn)
+          endTime += options.bonusTime * 60*1000;
         events.push({text: targetSeat.username + " zostaje wyrzucony z obozu.", visibility: "all"});
         seats = seats.map(s => {
           if (s.id === targetSeat.id)
@@ -45,7 +46,7 @@ export default function VotingModal({gameState, setGameState, me, options})
       else
         events.push({text: targetSeat.username +  " zostaje na obozie.", visibility: "all"});
     }
-    setGameState({...gameState, seats: seats, endTime: endTime,
+    setGameState({...gameState, seats: seats, endTime: options.timeOn ? endTime : null,
       voting:
       {
         ...gameState?.voting ?? {},

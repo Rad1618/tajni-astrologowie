@@ -73,6 +73,14 @@
   box-sizing: border-box;
 }
 
+.appContent.Astrologs {
+  background-color: rgb(234, 212, 212);
+}
+
+.appContent.Astronoms {
+  background-color: rgb(212, 213, 234);
+}
+
 .messagesList {
   list-style: none;
   padding-left: 0;

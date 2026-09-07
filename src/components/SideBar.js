@@ -1,7 +1,9 @@
 import '../styles/sidebar.css';
 
-export default function SideBar({me, switchDev, options, setOptions, gameStarted, setGameState})
+export default function SideBar({me, switchDev, options, setOptions, gameState, setGameState})
 {
+  const gameStarted = !!gameState;
+
   return (<div className="sidebarContainer">
     <div className="sidebarBoolContainer">
       <button disabled={gameStarted} className={(me?.dev ?? false) ? "sidebarBoolActive" : "sidebarBool"} onClick={switchDev}></button>
@@ -39,5 +41,11 @@ export default function SideBar({me, switchDev, options, setOptions, gameStarted
       <button disabled={!gameStarted} className="sidebarTrigger" onClick={() => setGameState("Reset")}></button>
       <div>Reset</div>
     </div>
+    {me?.dev && gameStarted && <>
+      <div className="sidebarTriggerContainer">
+      <button disabled={!gameStarted} className="sidebarTrigger" onClick={() => setGameState({...gameState, endTime: (gameState?.endTime ?? 0) + 30000})}></button>
+      <div>+30 s</div>
+    </div>
+    </>}
   </div>);
 }

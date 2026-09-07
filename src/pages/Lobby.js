@@ -164,7 +164,7 @@ export default function Lobby({gameState, setGameState, members, options, setOpt
     }
     newGame.orders = orders.sort(function(a, b) {return a - b; });
     const d = new Date();
-    if (orders.length === 0)
+    if (orders.length === 0 && options.timeOn)
       newGame.endTime = d.getTime() + options.time*60*1000;
     setGameState(newGame);
   }

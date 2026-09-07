@@ -68,7 +68,7 @@ export default function GamePage({gameState, setGameState, me, win, checkWin, op
 
   return (
     <div>
-      {win === "Astrologs" && <div className="gameWin">Wygrali Astrolodzy</div>}
+      {win === "Astrologs" && <div className="gameWin Astrologs">Wygrali Astrolodzy</div>}
       {win === "Astronoms" && <div className="gameWin">Wygrali Astronomowie</div>}
       <div className="gamePlayerData">
         <div>Twoja rola: {role}</div>

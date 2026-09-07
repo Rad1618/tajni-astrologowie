@@ -8,6 +8,10 @@
     text-align: center;
 }
 
+.gameWin.Astrologs {
+    text-shadow: #ff0008 1px 0 3px;
+}
+
 .gamePlayerData {
     padding: 4px;
     border: solid 1px #000;

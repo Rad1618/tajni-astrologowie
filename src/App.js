@@ -147,7 +147,7 @@ function App() {
     if (newGameState && newGameState !== "Reset")
     {
       newGameState.version += 1;
-      if (newGameState?.orders && newGameState.orders.length === 0 && !newGameState?.endTime)
+      if (newGameState?.orders && newGameState.orders.length === 0 && !newGameState?.endTime && options.timeOn)
         newGameState.endTime = new Date().getTime() + options.time*60*1000;
     }
     const message = {type: "game", data: newGameState};
@@ -188,7 +188,7 @@ function App() {
 
   function checkWinCondition(gameState)
   {
-    if (gameState?.endTime)
+    if (gameState?.endTime && optionsRef.current.timeOn)
     {
       const d = new Date();
       const remainingTime = gameState.endTime - d.getTime();
@@ -227,11 +227,11 @@ function App() {
         <link rel='icon' href='/favicon.ico' />
       </header>
       <main className="appMain">
-        <div className="appContent">
+        <div className={"appContent " + win}>
           {roomN ? <>
           <Members members={members} me={me} room={roomN}/>
           <div className="appGrid">
-            <SideBar me={me} switchDev={switchDev} options={options} setOptions={onOptionsChange} gameStarted={!!gameState} setGameState={onGameStateChange}/>
+            <SideBar me={me} switchDev={switchDev} options={options} setOptions={onOptionsChange} gameState={gameState} setGameState={onGameStateChange}/>
             {
               gameState ?
               <GamePage gameState={gameState} setGameState={onGameStateChange} me={me} win={win} checkWin={checkWinCondition} options={options}/>
