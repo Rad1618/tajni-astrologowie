@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import ReportBugModal from '../modals/ReportBugModal'
+import { Bug, RotateCcw } from 'lucide-react'
 import '../styles/sidebar.css';
 
-export default function SideBar({me, switchDev, options, setOptions, gameState, setGameState})
+export default function LeftSidebar({me, switchDev, options, setOptions, gameState, setGameState})
 {
   const [reportBugOpen, setReportBugOpen] = useState(false);
 
@@ -10,7 +11,9 @@ export default function SideBar({me, switchDev, options, setOptions, gameState, 
 
   return (<div className="sidebarContainer">
     <div className="sidebarTriggerContainer">
-      <button className="sidebarTrigger" onClick={() => {setReportBugOpen(true)}}></button>
+      <button className="sidebarTrigger" onClick={() => {setReportBugOpen(true)}}>
+        <Bug className='buttonIcon'/>
+      </button>
       <div>Mam Buga!</div>
     </div>
     <div className="sidebarBoolContainer">
@@ -50,7 +53,9 @@ export default function SideBar({me, switchDev, options, setOptions, gameState, 
       <div>Hard Mode</div>
     </div>
     <div className="sidebarTriggerContainer">
-      <button disabled={!gameStarted} className="sidebarTrigger" onClick={() => setGameState("Reset")}></button>
+      <button disabled={!gameStarted} className="sidebarTrigger" onClick={() => window.confirm("Ta akcja zakończy obecną grę. Czy jesteś pewien?") && setGameState("Reset")}>
+        <RotateCcw className='buttonIcon'/>
+      </button>
       <div>Reset</div>
     </div>
     {me?.dev && gameStarted && <>

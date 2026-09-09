@@ -928,8 +928,8 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
           </div>
           {/* {s.sleepless && <div>Niewyspany</div>} */}
           <div>
-            {!isNight && !isUser && !isDev && !isVoting && s.id !== me.id && !s.removed && <button className="gameButton" onClick={(e) => startVoting(e, s.id)}>Oskarż</button>}
-            {!isDev && myAction && !isVoting && canBeSelected.includes(s.seatId) && !s.removed && <button className={isSelected.includes(s.seatId) ? "gameActionSelectionTrue" : "gameActionSelectionFalse"} onClick={() => actionTargetSelected(s.seatId)}>Wybierz</button>}
+            {!isNight && !isUser && !isDev && !isVoting && s.id !== me.id && !s.removed && !gameState.ended && <button className="gameButton" onClick={(e) => startVoting(e, s.id)}>Oskarż</button>}
+            {!isDev && myAction && !isVoting && canBeSelected.includes(s.seatId) && !s.removed && !gameState.ended && <button className={isSelected.includes(s.seatId) ? "gameActionSelectionTrue" : "gameActionSelectionFalse"} onClick={() => actionTargetSelected(s.seatId)}>Wybierz</button>}
           </div>
           <textarea className="gameTextArea"></textarea>
         </div> : 

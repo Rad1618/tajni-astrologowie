@@ -1,5 +1,4 @@
-.modalOverlay
-{
+.modalOverlay {
     top: 0;
     left: 0;
     position: fixed;
@@ -9,8 +8,7 @@
     z-index: 10;
 }
 
-.modalPanel
-{
+.modalPanel {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -25,6 +23,10 @@
     align-items: center;
 }
 
+.modalPanel.wide {
+    width: 800px;
+}
+
 .modalHeader {
     font-size: 1.1rem;
     font-weight: 600;
@@ -37,7 +39,7 @@
     margin-top: 8px;
 }
 
-.modalButton{
+.modalButton {
     background-color: #a6a6a6;
     border: solid 1px #9392a1;
     color: #000;
@@ -77,4 +79,51 @@
 .modalText {
     text-align: justify;
     padding: 8px;
+}
+
+.modalTable {
+    gap: 0;
+    width: 100%;
+    margin: 12px 0px;
+    border-collapse: collapse;
+}
+
+.modalTable td {
+    border: 1px solid #e3e3e3;
+    padding: 2px;
+}
+
+.modalTable th {
+    font-weight: 700;
+    border: 1px solid #e3e3e3;
+}
+
+.goToTheLeft {
+    align-self: flex-start;
+    cursor: wait;
+}
+
+.sorOptionButton {
+    height: 24px;
+    width: 80%;
+    background-color: #e0e1eb;
+    cursor: pointer;
+}
+
+.sorOptionButton:hover {
+    background-color: #ced0e0;
+}
+
+.sorOptionButton:disabled {
+    color: #6f6f6f;
+    background-color: #e3e3e3;
+    cursor: no-drop;
+}
+
+.redText {
+    color: #f00;
+}
+
+.marginBottom {
+    margin-bottom: 8px;
 }

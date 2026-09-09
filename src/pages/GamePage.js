@@ -14,7 +14,7 @@ export default function GamePage({gameState, setGameState, me, win, checkWin, op
 
   function updateRemainingTime()
   {
-    if (!options.timeOn)
+    if (!options.timeOn || gameState?.ended)
       return;
     let newTime = (gameState?.endTime ?? d.getTime()) - d.getTime();
     if (!!gameState?.voting?.active)

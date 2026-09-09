@@ -81,12 +81,20 @@
 .sidebarTrigger {
     cursor: pointer;
     border-radius: 999px;
-    height: 16px;
-    width: 16px;
+    height: 18px;
+    width: 18px;
     background-color: #bab9c5;
     border: solid 1px #9392a1;
 }
 
 .sidebarTrigger:disabled {
     cursor: no-drop;
+}
+
+.buttonIcon {
+    position: relative;
+    top: -1px;
+    left: -5.75px;
+    height: 16px;
+    width: 16px;
 }

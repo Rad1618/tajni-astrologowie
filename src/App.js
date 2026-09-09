@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import sha256 from 'crypto-js/sha256';
 import EntrancePage from './pages/Entrance';
 import Members from './components/Members';
-import SideBar from './components/SideBar';
+import LeftSidebar from './components/LeftSidebar';
+import RightSideBar from './components/RightSidebar';
 import Lobby from './pages/Lobby';
 import GamePage from './pages/GamePage';
 import VotingModal from './modals/VotingModal';
@@ -250,14 +251,15 @@ function App() {
         <div className="appContent">
           {roomN ? <>
           <Members members={members} me={me} room={roomN}/>
-          <div className={"appGrid " + win + (gameState && gameState.orders.length > 0 && " Night")}>
-            <SideBar me={me} switchDev={switchDev} options={options} setOptions={onOptionsChange} gameState={gameState} setGameState={onGameStateChange}/>
+          <div className={"appGrid " + win + ((gameState && gameState.orders.length > 0) ? " Night" : "")}>
+            <LeftSidebar me={me} switchDev={switchDev} options={options} setOptions={onOptionsChange} gameState={gameState} setGameState={onGameStateChange}/>
             {
               gameState ?
               <GamePage gameState={gameState} setGameState={onGameStateChange} me={me} win={win} checkWin={checkWinCondition} options={options}/>
               :
               <Lobby gameState={gameState} setGameState={onGameStateChange} members={members} options={options} setOptions={onOptionsChange}/>
             }
+            <RightSideBar gameState={gameState}/>
           </div></> : 
           <EntrancePage setRoom={setNames}/>
           }

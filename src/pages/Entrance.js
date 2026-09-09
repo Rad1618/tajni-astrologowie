@@ -8,9 +8,9 @@ export default function EntrancePage({setRoom})
 
   return (
     <div className="entrancePage">
-      <div>Name</div>
+      <div>Imię</div>
       <textarea className="entranceTextArea" onChange={(e) => setUserName(e.target.value)}></textarea>
-      <div>Room</div>
+      <div>Pokój</div>
       <textarea className="entranceTextArea" onChange={(e) => setRoomName(e.target.value)}></textarea>
       <button className="entranceButton" onClick={() => setRoom(roomName, userName)}>Enter</button>
     </div>
