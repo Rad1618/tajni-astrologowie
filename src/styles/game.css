@@ -19,6 +19,7 @@
     margin-top: 10px;
     margin-bottom: 8px;
     width: 280px;
+    background-color: #fff;
 }
 
 .gameSideAstrolog {
@@ -34,6 +35,7 @@
     margin-bottom: 8px;
     padding: 4px;
     align-items: center;
+    background-color: #fff;
 }
 
 .gameBoardGrid {
@@ -66,6 +68,13 @@
 .gameSeatNameRemoved {
     color: #888;
     text-decoration: line-through;
+}
+
+.gameVoteBot {
+    width: 16px;
+    height: 16px;
+    background-color: rgb(127, 127, 127);
+    border-radius: 999px;
 }
 
 .gameVoteTrue {

@@ -22,6 +22,7 @@ function App() {
     gorszyObozny: false,
     astroLOG: 3,
     selectedRoles: [],
+    hardMode: false,
   });
 
   const [me, setMe] = useState(
@@ -79,7 +80,8 @@ function App() {
           setGameState(null);
         if ((data.data?.version ?? -1) <= (gameRef.current?.version ?? -2))
           return;
-        console.log(data.data);
+        if (me.dev)
+          console.log(data.data);
         const winStatus = checkWinCondition(data.data);
         setWin(winStatus);
         if (winStatus !== "None")
@@ -92,7 +94,8 @@ function App() {
       }
       else if (data.type === "options")
       {
-        console.log(data.data);
+        if (me?.dev)
+          console.log(data.data);
         setOptions(data.data);
       }
     });
@@ -120,6 +123,21 @@ function App() {
       const newMembers = [...membersRef.current];
       newMembers.splice(index, 1);
       setMembers(newMembers);
+      if (!!gameRef.current)  // game is on
+      {
+        const seats = gameRef.current.seats;
+        const events = gameRef.current?.events ?? [];
+        for (let i = 0; i < seats.length; i++)
+        {
+          if (seats[i].id === id)
+          {
+            seats[i].removed = true;
+            events.push({text: seats[i].username + " wyjechał niespodziewanie z obozu. ", visibility: "all"});
+            return;
+          }
+        }
+        onGameStateChange({...gameRef.current, seats: seats, events: events});
+      }
     });
   }
 
@@ -150,6 +168,8 @@ function App() {
       if (newGameState?.orders && newGameState.orders.length === 0 && !newGameState?.endTime && options.timeOn)
         newGameState.endTime = new Date().getTime() + options.time*60*1000;
     }
+    else if (newGameState === "Reset")
+      setWin("None");
     const message = {type: "game", data: newGameState};
     drone.publish({
       room: "observable-room-" + roomN,
@@ -211,7 +231,7 @@ function App() {
     });
     if (remainingAstrologs === 0)
       return "Astronoms";
-    if (removedAstronoms >= 2)
+    if (removedAstronoms >= (optionsRef.current.hardMode ? 1 : 2))
       return "Astrologs";
     if (remainingAstrologs >= remainingAstronoms)
       return "Astrologs";
@@ -227,10 +247,10 @@ function App() {
         <link rel='icon' href='/favicon.ico' />
       </header>
       <main className="appMain">
-        <div className={"appContent " + win}>
+        <div className="appContent">
           {roomN ? <>
           <Members members={members} me={me} room={roomN}/>
-          <div className="appGrid">
+          <div className={"appGrid " + win + (gameState && gameState.orders.length > 0 && " Night")}>
             <SideBar me={me} switchDev={switchDev} options={options} setOptions={onOptionsChange} gameState={gameState} setGameState={onGameStateChange}/>
             {
               gameState ?

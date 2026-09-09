@@ -64,12 +64,15 @@ export default function VotingModal({gameState, setGameState, me, options})
     const astrologs = gameState.seats.filter(s => s.side === "astrolog" && !s?.bot);
     const bots = gameState.seats.filter(s => s?.bot);
     bots.forEach((b) => {
-      let humanId = null;
-      if (b.side === "astrolog" && astrologs.length > 0)
-        humanId = astrologs[Math.floor(Math.random() * astrologs.length)].id;
-      else
-        humanId = astronoms[Math.floor(Math.random() * astronoms.length)].id;
-      votes[b.id] = votes?.[humanId] ?? true;
+      if (!b.removed)
+      {
+        let humanId = null;
+        if (b.side === "astrolog" && astrologs.length > 0)
+          humanId = astrologs[Math.floor(Math.random() * astrologs.length)].id;
+        else
+          humanId = astronoms[Math.floor(Math.random() * astronoms.length)].id;
+        votes[b.id] = votes?.[humanId] ?? true;
+      }
     });
     return votes;
   }

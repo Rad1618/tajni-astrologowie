@@ -4,29 +4,29 @@ import styles from "../styles/lobby.css"
 
 const ROLES = [
   {name: "Astrolog", side: "astrolog", order: 0, desc: "Nie ma specjalnej zdolności.", lore: "Ale bardzo chciałby jakąś mieć."},
-  {name: "Astrolog medyczny", side: "astrolog", order: 20, desc: "Wybierz siedzącą obok osobę. Ta osoba staje się niewyspana.", lore: "Nikt się nie zorientuje, że to kawa bez kofeiny."},
-  {name: "Astrolog holistyczny", side: "astrolog", order: 30, desc: "Obie osoby siedzące obok ciebie stają się niewyspane.", lore: "Jego wykłady usypiają nawet najsilniejszych."},
-  {name: "Manipulator", side: "astrolog", order: 10, desc: "Zamienia w astrologa wybranego astronoma. Nowy astrolog nie poznaje innych.", lore: "Oni nie chcą, abyś mi uwierzył."},
-  {name: "Astrolog biurokratyczny", side: "astrolog", order: 40, desc: "Dopóki pozostaje na obozie, nie ujawnia się ról osób wyrzuconych.", lore: "Wszystko jest w papierach."},
+  {name: "Astrolog medyczny", side: "astrolog", order: 200, desc: "Wybierz siedzącą obok osobę. Ta osoba staje się niewyspana.", lore: "Nikt się nie zorientuje, że to kawa bez kofeiny."},
+  {name: "Astrolog holistyczny", side: "astrolog", order: 300, desc: "Obie osoby siedzące obok ciebie stają się niewyspane.", lore: "Jego wykłady usypiają nawet najsilniejszych."},
+  {name: "Manipulator", side: "astrolog", order: 100, desc: "Zamienia w astrologa wybranego astronoma. Nowy astrolog nie poznaje innych.", lore: "Oni nie chcą, abyś mi uwierzył."},
+  {name: "Astrolog biurokratyczny", side: "astrolog", order: 400, desc: "Dopóki pozostaje na obozie, nie ujawnia się ról osób wyrzuconych.", lore: "Wszystko jest w papierach."},
   {name: "Komendant", side: "astronom", order: -1, desc: "Użyj funkcji wybranego astronoma.", lore: "Zbiórka kadry!"},
   {name: "Dinozaur", side: "astronom", order: -1, desc: "Ujawnij swoją rolę.", lore: "Był tu od zawsze. On jest pewny."},
-  {name: "Mini-Medyk", side: "astronom", order: 110, desc: "Leczy z niewyspania swoich sąsiadów. Dowiaduje się, ile osób uleczył.", lore: "Intensywne leczenie kofeiną."},
-  // {name: "Medyk", side: "astronom", order: 120, desc: "Leczy z niewyspania 4 osoby wokół siebie. Dowiaduje się, ile osób uleczył.", lore: "Kroplówka z energetyka."},
-  {name: "Wych", side: "astronom", order: 200, desc: "Poznaje odległość do najbliższego niewyspanego.", lore: "Szósty zmysł."},
+  {name: "Mini-Medyk", side: "astronom", order: 1100, desc: "Leczy z niewyspania swoich sąsiadów. Dowiaduje się, ile osób uleczył.", lore: "Intensywne leczenie kofeiną."},
+  // {name: "Medyk", side: "astronom", order: 1200, desc: "Leczy z niewyspania 4 osoby wokół siebie. Dowiaduje się, ile osób uleczył.", lore: "Kroplówka z energetyka."},
+  {name: "Wych", side: "astronom", order: 2000, desc: "Poznaje odległość do najbliższego niewyspanego.", lore: "Szósty zmysł."},
   {name: "Zły oboźny", side: "astronom", order: -1, desc: "Wskaż osobę. Jeśli jest astrologiem, zostaje wyeliminowana z gry.", lore: "Na polanie króluje..."},
-  {name: "Kwatermistrz", side: "astronom", order: 210, desc: "Poznaje rolę jednego ze swoich sąsiadów.", lore: "Tylko on mógłby w taki sposób wbijać śledzie."},
-  {name: "Mistrz obserwacji", side: "astronom", order: 100, desc: "Wybierz jedną osobę. Ta osoba staje się niewyspana. Dowiadujesz się, czy jest astrologiem.", lore: "Niebo żyleta, obsy do rana!"},
-  {name: "Planmistrz", side: "astronom", order: 220, desc: "Poznajesz 3 osoby, z których dokładnie jedna jest astrologiem.", lore: "Napiszcie abstrakty!"},
+  {name: "Kwatermistrz", side: "astronom", order: 2100, desc: "Poznaje rolę jednego ze swoich sąsiadów.", lore: "Tylko on mógłby w taki sposób wbijać śledzie."},
+  {name: "Mistrz obserwacji", side: "astronom", order: 1000, desc: "Wybierz jedną osobę. Ta osoba staje się niewyspana. Dowiadujesz się, czy jest astrologiem.", lore: "Niebo żyleta, obsy do rana!"},
+  {name: "Planmistrz", side: "astronom", order: 2200, desc: "Poznajesz 3 osoby, z których dokładnie jedna jest astrologiem.", lore: "Napiszcie abstrakty!"},
   {name: "Mistrz gry", side: "astronom", order: -1, desc: "Wskaż 3 osoby. Poznaj ilość astrologów wśród nich.", lore: "Nasi szybciej by to załapali."},
-  {name: "Dyżurny", side: "astronom", order: 250, desc: "Poznaj odległość do najbliższego astrologa.", lore: "Zaraz, a co to jest o tam?"},
+  {name: "Dyżurny", side: "astronom", order: 2500, desc: "Poznaj odległość do najbliższego astrologa.", lore: "Zaraz, a co to jest o tam?"},
   {name: "Bydło", side: "astronom", order: 0, desc: "Bydło kopiuje rolę innego astronoma, ale otrzymuje fałszywe informacje. Bydło nie wie, że jest bydłem.", lore: "Kadra robi bydło!"},
-  {name: "Gitarzysta", side: "astronom", order: 230, desc: "Poznajesz ilość astrologów siedzących obok ciebie.", lore: "Oni coś podejrzanie inaczej śpiewają."},
-  {name: "Antyswatus", side: "astronom", order: 240, desc: "Dowiadujesz się, ile par siedzących obok siebie astrologów istnieje.", lore: "Ta dzisiejsza młodzież!"},
+  {name: "Gitarzysta", side: "astronom", order: 2300, desc: "Poznajesz ilość astrologów siedzących obok ciebie.", lore: "Oni coś podejrzanie inaczej śpiewają."},
+  {name: "Antyswatus", side: "astronom", order: 2400, desc: "Dowiadujesz się, ile par siedzących obok siebie astrologów istnieje.", lore: "Ta dzisiejsza młodzież!"},
   {name: "Fizyk", side: "astronom", order: -1, desc: "Wskaż wybraną osobę. Dowiesz się, czy wyrzucenie tej osoby spowoduje koniec gry i kto wygra.", lore: "Zróbmy eksperyment myślowy."},
   {name: "Chemik", side: "astronom", order: -1, desc: "Wskaż dwie osoby. Dowiesz się, czy jest wśród nich co najmniej jedna zła.", lore: "Co tak pachnie?"},
-  {name: "Ekonomista", side: "astronom", order: 260, desc: "Poznaje stronę (lewą lub prawą), po której jest więcej astrologów.", lore: "Da się to jakoś policzyć."},
-  {name: "Astronom sferyczny", side: "astronom", order: 270, desc: "Poznaj stronę, w którą jest najbliższy astrolog.", lore: "To półkole jest zdecydowanie bardziej podejrzane."},
-  {name: "Kierowca", side: "astronom", order: 280, desc: "Zawsze wie, czy jest niewyspany. Mówi prawdę nawet będąc niewyspanym.", lore: "8 godzin na SORze i jeszcze trzeba wrócić."},
+  {name: "Ekonomista", side: "astronom", order: 2600, desc: "Poznaje stronę (lewą lub prawą), po której jest więcej astrologów.", lore: "Da się to jakoś policzyć."},
+  {name: "Astronom sferyczny", side: "astronom", order: 2700, desc: "Poznaj stronę, w którą jest najbliższy astrolog.", lore: "To półkole jest zdecydowanie bardziej podejrzane."},
+  {name: "Kierowca", side: "astronom", order: 2800, desc: "Zawsze wie, czy jest niewyspany. Mówi prawdę nawet będąc niewyspanym.", lore: "8 godzin na SORze i jeszcze trzeba wrócić."},
 
   // {name: "Wych", side: "astronom", order: 0, desc: "", lore: ""},
 ]
@@ -42,7 +42,6 @@ export default function Lobby({gameState, setGameState, members, options, setOpt
 
   function setSelectedRoles(roles)
   {
-    console.log(roles);
     setOptions({...options, selectedRoles: roles});
   }
 
@@ -83,7 +82,7 @@ export default function Lobby({gameState, setGameState, members, options, setOpt
       events: [],
       astrologsCount: astrologs,
       removedRoles: removedRoles,
-      unoccupiedRoles: removedRoles
+      unoccupiedRoles: removedRoles,
     };
     const allRolesText = options.selectedRoles.reduce((text, r) => {return text + r.name + ", "}, "").slice(0, -2);
     newGame.events.push({text: "Dostępne role: " + allRolesText, visibility: "all"});
@@ -107,9 +106,9 @@ export default function Lobby({gameState, setGameState, members, options, setOpt
     let botDev = true;
     let forcedMember = null;
     let forcedRole = null;
+    const players = members.filter(m => !m?.dev);
     if (options.bots > 0)  // at least one human must be astronom
     {
-      const players = members.filter(m => !m?.dev);
       if (players.length === 0)
         return;
       forcedMember = players[Math.floor(Math.random() * players.length)].id;
@@ -138,12 +137,12 @@ export default function Lobby({gameState, setGameState, members, options, setOpt
       const bydlo = (randRole.side === "bydlo");
       if (bydlo)
         randRole.side = "astronom";
-      let order = randRole.order + remainingRoles.filter(r => r.name === randRole.name).length;
+      let order = randRole.order + newGame.seats.length;
       if (randRole.order < 0)
         order = randRole.order;
       if (order != null && order >= 0)
         orders.push(order);
-      newGame.seats.push({seatId: newGame.seats.length, id: member.id, username: member.clientData.username, role: randRole.name, side: randRole.side, order: order, bydlo: bydlo, bot: false, botDev: botDev});
+      newGame.seats.push({id: member.id, username: member.clientData.username, role: randRole.name, side: randRole.side, order: order, bydlo: bydlo, bot: false, botDev: botDev});
       botDev = false;
     });
     for (let i = 0; i < options.bots; i++)
@@ -155,17 +154,43 @@ export default function Lobby({gameState, setGameState, members, options, setOpt
       if (bydlo)
         randRole.side = "astronom";
       remainingRoles.splice(id, 1);
-      let order = randRole.order + remainingRoles.filter(r => r.name === randRole.name).length;
+      let order = randRole.order + newGame.seats.length;
       if (randRole.order < 0)
         order = randRole.order;
       if (order != null && order >= 0)
         orders.push(order);
-      newGame.seats.push({seatId: newGame.seats.length, id: i+1, username: "bot_" + (i+1), role: randRole.name, side: randRole.side, order: order, bydlo: bydlo, bot: true})
+      newGame.seats.push({id: i+1, username: "bot_" + (i+1), role: randRole.name, side: randRole.side, order: order, bydlo: bydlo, bot: true})
     }
-    newGame.orders = orders.sort(function(a, b) {return a - b; });
     const d = new Date();
     if (orders.length === 0 && options.timeOn)
       newGame.endTime = d.getTime() + options.time*60*1000;
+
+    // randomizing seats
+    const orderedSeats = [...newGame.seats];
+    const randomizedSeats = [];
+    while (orderedSeats.length > 0)
+    {
+      const id = Math.floor(Math.random() * orderedSeats.length);
+      randomizedSeats.push(orderedSeats[id]);
+      randomizedSeats[randomizedSeats.length - 1].seatId = randomizedSeats.length - 1;
+      orderedSeats.splice(id, 1);
+    }
+    newGame.seats = randomizedSeats;
+
+    // setting a dayKeeper (in multiplayer games), to add a delay before start of the day
+    const randStart = Math.floor(Math.random() * newGame.seats.length);
+    for (let i = 0; i < newGame.seats.length; i++)
+    {
+      const j = (i + randStart) % newGame.seats.length;
+      if (newGame.seats[j].order !== newGame.orders[newGame.orders.length - 1])
+      {
+        newGame.seats[j].dayKeeper = true;
+        orders.push(999999); // dayKeeper order is last
+        break;
+      }
+    }
+    
+    newGame.orders = orders.sort(function(a, b) {return a - b; });
     setGameState(newGame);
   }
 

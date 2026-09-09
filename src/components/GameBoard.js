@@ -16,6 +16,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
   const isDev = me?.dev;
   const mySeat = isUser || gameState.seats.length <= seat ? {} : gameState.seats[seat];
   const myAction = !mySeat?.usedUp && (((isNight && gameState.orders[0] === mySeat?.order) || (!isNight && mySeat?.order < 0)));
+  const dayKeeper = isNight && gameState.orders[0] === 999999 && mySeat?.dayKeeper;
   const votes = gameState?.voting?.finalised ? gameState.voting.votes : null;
   const hideRemoved = gameState.seats.reduce((state, s) => {
     if (state) return true;
@@ -150,7 +151,26 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         // checking if bot player has now action
         if (gameState.seats[i].bot && gameState.orders[0] === gameState.seats[i].order)
         {
-          botAction(i, gameState.seats[i]);
+          // additional delay in games with multiple humans and bots
+          if (gameState.seats.filter(s => !s?.bot).length > 1)
+          {
+            const randomTime = Math.floor(Math.random() * 4000) + 2000;
+            setTimeout(() => botAction(i, gameState.seats[i]), randomTime);
+          }
+          else
+            botAction(i, gameState.seats[i]);
+          return;
+        }
+        if (gameState.seats[i].bot && gameState.seats[i].dayKeeper && gameState.orders[0] === 999999)
+        {
+          // additional delay in games with multiple humans and bots
+          if (gameState.seats.filter(s => !s?.bot).length > 1)
+          {
+            const randomTime = Math.floor(Math.random() * 6000) + 2000;
+            setTimeout(() => beginDay(), randomTime);
+          }
+          else
+            beginDay();
           return;
         }
       }
@@ -878,6 +898,11 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
     }
   }
 
+  function beginDay()
+  {
+    setGameState({...gameState, orders: []});
+  }
+
   const komendantRoles = gameState.seats.filter(s => s.side === "astronom" && s.role !== "Komendant")
     .reduce((roles, s) => {if (!roles.includes(s.role)) roles.push(s.role); return roles;}, []);
 
@@ -891,10 +916,14 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         </select>}
         {confirmButtonVisible && <button className="gameButton" onClick={() => activateAction([], role, seat)}>Potwierdź</button>}
       </div>}
+      {dayKeeper && <div className="gameActionContainer">
+        <span>Kliknij przycisk, aby rozpocząć grę.</span>
+        <button className="gameButton" onClick={beginDay}>Miasto budzi się...</button>
+      </div>}
       <div className="gameBoardGrid">
         {seats.map((s, idx) => <div key={idx}>{s ? <div className="gameSeat">
           <div className="gameSeatNameContainer">
-            {votes && s.id in votes && <div className={votes[s.id] ? "gameVoteTrue" : "gameVoteFalse"}></div>}
+            {votes && s.id in votes && <div className={s.bot ? "gameVoteBot" : (votes[s.id] ? "gameVoteTrue" : "gameVoteFalse")}></div>}
             <div className={s.removed ? "gameSeatNameRemoved" : "gameSeatName"}>{createPlayerText(s)}</div>
           </div>
           {/* {s.sleepless && <div>Niewyspany</div>} */}

@@ -73,3 +73,8 @@
 .modalGridButton {
     width: 100%;
 }
+
+.modalText {
+    text-align: justify;
+    padding: 8px;
+}

@@ -35,7 +35,7 @@ export default function GamePage({gameState, setGameState, me, win, checkWin, op
         setRole(gameState.seats[i].role);
       }
     }
-  }, [gameState])
+  }, [gameState, me])
 
   function filterEvents(event, mySeat)
   {

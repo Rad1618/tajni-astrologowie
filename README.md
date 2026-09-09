@@ -19,6 +19,8 @@ Faza dnia: podczas tej fazy odbywają się wszystkie dyskusje. Można również 
 z obozu. Aby to zrobić, jedna osoba musi oskarżyć podejrzanego, a następnie większość musi zagłosować za jego
 wyrzuceniem. Część ról może użyć swojej zdolności w dowolnej chwili dnia. Faza dnia jest ograniczona czasowo.
 
+W grach wieloosobowych, jednemu losowemu graczowi (może być botowi) zostanie przypisana funkcja rozpoczęcia fazy dnia. Nie ma to żadnego wpływu na rozgrywkę, a ma jadynie na celu uniknięcie jednego żadkiego (aczkolwiek możliwego) edge casu.
+
 Astronomowie wygrywają, jeśli wyrzucą z obozu wszystkich astrologów, zanim wygrają astrologowie.
 Astrologowie mogą wygrać na kilka sposobów:
 1. Wyrzucenie drugiego astronoma
@@ -63,14 +65,18 @@ W szczególności nie powinno się grać z rolami "Komendant" i "Zły oboźny", 
 
 Boty wykonują swoje akcje automatycznie na początku gry i dzielą się zdobytymi informacjami na tablicy ogłoszeń (w losowej kolejności). Boty astrolodzy udają losową rolę astronoma (inną niż Dinozaur). Boty astrolodzy ZAWSZE kłamią (działają tak, jakby rola, za którą się podają była niewyspana).
 
-Podczas głosowania, każdy bot głosuje, jak losowy człowiek w ich frakcji. Jeśli frakcja astrologów nie ma człowieka, boty głosują, jak losowy człowiek astronom.
+Podczas głosowania, każdy bot głosuje, jak losowy człowiek w ich frakcji. Jeśli frakcja astrologów nie ma człowieka, boty głosują, jak losowy człowiek astronom. Głosy botów są ukryte, gdyż mogą być w niektórych sytuacjach wykorzystane, do detukcji frakcji botów (a niekiedy i ludzi).
+
+Jeżeli w grze z botami bierze udział więcej niż 1 człowiek, akcje botów są opóźniane, aby
+utrudnić nielegalną dedukcję roli innych graczy. Pomimo tego, system nie jest idealny, więc
+zaleca się, aby w takich grach wykonywać akcje nocne w czasie pomiędzy 1, a 5 sekund od ich pojawienia.
 
 ## Zabronione strategie
 
 Zabronione są wszelkie strategie dedukcji, które wymagają znajomości kodu programu, lub wiedzy zewnętrznej. Dotyczy to między innymi:
 
 1. Prób weryfikacji czyjejś roli na podstawie tego, czy umie zacytować precyzyjnie swoją wiadomość.
-2. Dedukcji stron botów na podstawie manipulacji przy pomocy głosowania.
+2. Dedukcji, kto ma jaką rolę na podstawie wydarzeń w fazy nocy.
 
 W związku z punktem 1. nie zaleca się również cytowania swoich wiadomości otrzymanych w związku z aktywacją roli.
 

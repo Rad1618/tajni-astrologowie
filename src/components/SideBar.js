@@ -1,15 +1,23 @@
+import { useState } from 'react';
+import ReportBugModal from '../modals/ReportBugModal'
 import '../styles/sidebar.css';
 
 export default function SideBar({me, switchDev, options, setOptions, gameState, setGameState})
 {
+  const [reportBugOpen, setReportBugOpen] = useState(false);
+
   const gameStarted = !!gameState;
 
   return (<div className="sidebarContainer">
+    <div className="sidebarTriggerContainer">
+      <button className="sidebarTrigger" onClick={() => {setReportBugOpen(true)}}></button>
+      <div>Mam Buga!</div>
+    </div>
     <div className="sidebarBoolContainer">
       <button disabled={gameStarted} className={(me?.dev ?? false) ? "sidebarBoolActive" : "sidebarBool"} onClick={switchDev}></button>
       <div>Dev</div>
     </div>
-    <div>Bots: {options.bots}</div>
+    <div>Boty: {options.bots}</div>
     <div className="sidebarStandardContainer">
       <button disabled={gameStarted} className='sidebarStandardButton' onClick={() => setOptions({...options, bots: Math.max(0, options.bots - 1)})}>-</button>
       <button disabled={gameStarted} className='sidebarStandardButton' onClick={() => setOptions({...options, bots: options.bots + 1})}>+</button>
@@ -37,6 +45,10 @@ export default function SideBar({me, switchDev, options, setOptions, gameState, 
       <button disabled={gameStarted} className='sidebarStandardButton' onClick={() => setOptions({...options, astroLOG: Math.max(0, options.astroLOG - 1)})}>-</button>
       <button disabled={gameStarted} className='sidebarStandardButton' onClick={() => setOptions({...options, astroLOG: options.astroLOG + 1})}>+</button>
     </div>
+    <div className="sidebarBoolContainer">
+      <button disabled={gameStarted} className={(options.hardMode) ? "sidebarBoolActive" : "sidebarBool"} onClick={() => setOptions({...options, hardMode: !options.hardMode})}></button>
+      <div>Hard Mode</div>
+    </div>
     <div className="sidebarTriggerContainer">
       <button disabled={!gameStarted} className="sidebarTrigger" onClick={() => setGameState("Reset")}></button>
       <div>Reset</div>
@@ -47,5 +59,6 @@ export default function SideBar({me, switchDev, options, setOptions, gameState, 
       <div>+30 s</div>
     </div>
     </>}
+    <ReportBugModal open={reportBugOpen} setOpen={setReportBugOpen}/>
   </div>);
 }
