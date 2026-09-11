@@ -63,7 +63,7 @@ export default function HelpMeModal({open, setOpen, gameState})
           {page === "credits" && <div>
             <p><strong>Główny Sprawca</strong><br/>Rad1618</p>
             <p><strong>Oryginalny Spiskowiec</strong><br/>Mac15001900</p>
-            <p><strong>Rat Queen</strong><br/>Malga01</p>
+            <p><strong>Rad Queen</strong><br/>Malga01</p>
             <p><strong>Deratyzatorzy</strong><br/>
               <Rat/><Rat/><Rat/>
             </p>
