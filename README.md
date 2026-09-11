@@ -61,7 +61,7 @@ w ciągu całej gry, może wysłać do 3 wiadomości (każda mająca maksymalnie
 Istnieje możliwość gry z botami. Boty są jednak wciąż w fazie testów, dlatego mogą powodować
 bugi i nie działać najlepiej, w niektórych sytuacjach. Podczas gry z botami, co najmniej jeden człowiek ZAWSZE będzie astronomem.
 
-W szczególności nie powinno się grać z rolami "Komendant" i "Zły oboźny", jeśli w grze są boty. "Bydło" i "Manipulator" również nie zostali jeszcze przetestowani, a potencjalnie mogą tworzyć problemy. Grając z botami, w grze musi być co najmniej jedna rola astronoma inna niż Dinozaur. W przeciwnym wypadku może dojść do zawieszenia strony.
+W szczególności nie powinno się grać z rolą "Komendant", jeśli w grze są boty. "Bydło" i "Manipulator" również nie zostali jeszcze przetestowani, a potencjalnie mogą tworzyć problemy. Grając z botami, w grze musi być co najmniej jedna rola astronoma inna niż Dinozaur. W przeciwnym wypadku może dojść do zawieszenia strony.
 
 Boty wykonują swoje akcje automatycznie na początku gry i dzielą się zdobytymi informacjami na tablicy ogłoszeń (w losowej kolejności). Boty astrolodzy udają losową rolę astronoma (inną niż Dinozaur). Boty astrolodzy ZAWSZE kłamią (działają tak, jakby rola, za którą się podają była niewyspana).
 

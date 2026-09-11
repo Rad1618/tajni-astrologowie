@@ -29,7 +29,7 @@ export default function OftenUsedSetups({open, setOpen, options, setOptions, ROL
           <div>{setup.name}</div>
         </Fragment>)}
       </div>
-      <button className='modalButton' onClick={() => setOpen(false)}>Close</button>
+      <button className='modalButton' onClick={() => setOpen(false)}>Zamknij</button>
     </div>
   </div>
 }

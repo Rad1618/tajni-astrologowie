@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import DayBotRoleModal from '../modals/DayBotRoleModal';
+import { ROLES } from '../data/roles';
 import '../styles/game.css';
 
 export default function GameBoard({gameState, setGameState, seat, me, checkWin, options}) {
@@ -9,6 +11,9 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
   const [confirmButtonVisible, setConfirmButtonVisible] = useState(false);
   const [komendantOption, setKomendantOption] = useState(null);
   const [komendantRole, setKomendantRole] = useState(null);
+
+  const [dayBotRoleOpen, setDayBotRoleOpen] = useState(false);
+  const [dayBotRoleSeat, setDayBotRoleSeat] = useState(null);
 
   const isNight = gameState.orders.length > 0;
   const isVoting = gameState?.voting?.active ?? false;
@@ -100,30 +105,13 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
       return;
     if (gameState.orders.length === 0)  // day bot roles
     {
+      let botEvents = gameState.events.filter(e => e.visibility.startsWith("botEvent"));
+      const newEvents = [];
       for (let i = 0; i < gameState.seats.length; i++)
       {
-        if (gameState.seats[i].bot && !gameState.seats[i].botDone)
-        {
-          if (gameState.seats[i].side !== "astrolog")
-            botAction(i, gameState.seats[i]);
-          else
-          {
-            let possibleRoles = []
-            if (!!gameState?.unoccupiedRoles)
-              possibleRoles = gameState.unoccupiedRoles.filter(r => r.side !== "astrolog" && r.name !== "Dinozaur");
-            if (possibleRoles.length === 0)
-              possibleRoles = gameState.allRoles.filter(r => r.side !== "astrolog" && r.name !== "Dinozaur");
-            const randRole = possibleRoles[Math.floor(Math.random() * possibleRoles.length)].name;
-            const targets = simulateTargetSelection(i, randRole);
-            activateAction(targets, randRole, i, true);
-          }
-          return;
-        }
+        if (gameState.seats[i].bot && gameState.seats[i].side !== "astrolog")
+          newEvents.push({text: gameState.seats[i].username + " (" + gameState.seats[i].role + "): Moja rola to " + gameState.seats[i].role, visibility: "all"});
       }
-      // all bots done
-      // trzebaby poprawić filter, bo teraz się załamie przy byt wielu botach
-      let botEvents = gameState.events.filter(e => e.visibility.toString().length <= 2);
-      const newEvents = [];
       while (botEvents.length > 0)
       {
         const randId = Math.floor(Math.random() * botEvents.length);
@@ -133,10 +121,11 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         let botRole = "";
         for (let i = 0; i < gameState.seats.length; i++)
         {
-          if (gameState.seats[i].id === event.visibility)
+          const id = Number(event.visibility.split("-")[1])
+          if (gameState.seats[i].id === id)
           {
             botName = gameState.seats[i].username;
-            botRole = gameState.seats[i]?.eventRole ?? gameState.seats[i].role;
+            botRole = gameState.seats[i]?.falseRole ?? gameState.seats[i].role;
             break;
           }
         }
@@ -358,7 +347,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [myAction, role]);
 
-  function simulateTargetSelection(botSeat, botRole)
+  function getTargetsForSelection(botSeat, botRole)
   {
     const possibleSelection = [];
     let N = 0;
@@ -392,7 +381,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
           possibleSelection.push(i);
       }
     }
-    else
+    else if (botRole !== "Dinozaur")
     {
       N = 1;
       for (let i = 0; i < gameState.seats.length; i++)
@@ -405,6 +394,14 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
       N = 2;
     else if (botRole === "Mistrz gry")
       N = 3;
+    return {possibleSelection: possibleSelection, N: N};
+  }
+
+  function simulateTargetSelection(botSeat, botRole)
+  {
+    const response = getTargetsForSelection(botSeat, botRole);
+    const possibleSelection = response?.possibleSelection ?? [];
+    let N = response?.N ?? 0;
     const selection = [];
     while (N > 0 && possibleSelection.length > 0)
     {
@@ -431,20 +428,34 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
     activateAction(newSelection, role, seat);
   }
 
-  function activateAction(selectionA, roleA, seatA, lie=false)
+  function activateAction(selectionA, roleA, seatA, lie=false, overt=false)
   {
     const isBot = gameState.seats[seatA].bot;
     if (!isBot && (!myAction || (selectionA.length === 0 && !confirmButtonVisible)))
       return;
-    const seatId = isBot ? gameState.seats[seatA].id : mySeat.id;
     const newState = {...gameState};
-    if (isBot && (newState.seats[seatA].side !== "astrolog" || lie))
+    const recipient = overt ? "all" : (isBot ? "botEvent-" + newState.seats[seatA].id : newState.seats[seatA].id);
+    if (isBot && newState.seats[seatA].side === "astrolog" && !overt)
     {
-      newState.seats[seatA].botDone = true;
-      newState.seats[seatA].eventRole = roleA;
+      let possibleRoles = []
+      if (!!gameState?.unoccupiedRoles)
+        possibleRoles = gameState.unoccupiedRoles.filter(r => r.side !== "astrolog" && r.name !== "Dinozaur");
+      if (possibleRoles.length === 0)
+        possibleRoles = gameState.allRoles.filter(r => r.side !== "astrolog" && r.name !== "Dinozaur");
+      
+      const falseRole = possibleRoles[Math.floor(Math.random() * possibleRoles.length)].name;
+      newState.seats[seatA].falseRole = falseRole;
+      const dayRole = ROLES.find(r => r.name === falseRole).order === -1;
+      newState.seats[seatA].falseDayRole = dayRole;
+      newState.events.push({text: "Moja rola to " + falseRole, visibility: recipient});
+      
       const id = newState.unoccupiedRoles.findIndex(r => r.name === roleA);
       if (id !== -1)
         newState.unoccupiedRoles.splice(id, 1);
+    }
+    if (isBot && overt)
+    {
+      newState.events.push({text: mySeat.username + " nakazuje " + newState.seats[seatA].username + " (" + roleA + ") użyć swojej akcji.", visibility: "all"});
     }
     if (roleA === "Astrolog" || roleA === "Astrolog biurokratyczny")
     {
@@ -529,7 +540,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         newState.seats[(seatA + 1) % newState.seats.length].sleepless = false;
         newState.seats[(seatA - 1 + newState.seats.length) % newState.seats.length].sleepless = false;
       }
-      newState.events.push({text: "Uleczyłeś " + count + " osób.", visibility: seatId})
+      newState.events.push({text: "Uleczyłeś " + count + " osób.", visibility: recipient})
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -565,7 +576,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
       // Niewyspane bydło udajace wycha poda poprawną informację 0
       if (newState.seats[seatA].sleepless && newState.seats[seatA].bydlo)
         closest = 0;
-      newState.events.push({text: "Najbliższy niewyspany znajduje się w odległosci " + closest + ".", visibility: seatId});
+      newState.events.push({text: "Najbliższy niewyspany znajduje się w odległosci " + closest + ".", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -580,7 +591,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
           newState.events.push({text: newState.seats[s].username + " został wyrzucony z obozu.", visibility: "all"});
         }
         else
-          newState.events.push({text: newState.seats[s].username + " nie został wyrzucony z obozu.", visibility: seatId});
+          newState.events.push({text: newState.seats[s].username + " nie został wyrzucony z obozu.", visibility: recipient});
       });
       newState.seats[seatA].usedUp = true;
       setGameState(newState);
@@ -599,7 +610,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         while (role === "Kwatermistrz" || neighbours.includes(role))
           role = newState.allRoles[Math.floor(Math.random() * newState.allRoles.length)].name;
       }
-      newState.events.push({text: "Obok Ciebie znajduje się " + role + ".", visibility: seatId});
+      newState.events.push({text: "Obok Ciebie znajduje się " + role + ".", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -611,9 +622,9 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         if (!lie)
           newState.seats[s].sleepless = true;
         if (!lie && !shouldGenerateFalseData(newState.seats[seatA]))
-          newState.events.push({text: newState.seats[s].username + " to " + newState.seats[s].side + ".", visibility: seatId});
+          newState.events.push({text: newState.seats[s].username + " to " + newState.seats[s].side + ".", visibility: recipient});
         else
-          newState.events.push({text: newState.seats[s].username + " to " + (newState.seats[s].side === "astrolog" ? "astronom" : "astrolog") + ".", visibility: seatId});
+          newState.events.push({text: newState.seats[s].username + " to " + (newState.seats[s].side === "astrolog" ? "astronom" : "astrolog") + ".", visibility: recipient});
       });
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
@@ -643,7 +654,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         astrologs += isAstrolog;
       }
       const names = selectedSeats.reduce((text, s) => {return text + s.username + ", "}, "").slice(0, -2);
-      newState.events.push({text: "Wśród " + names + " jest dokładnie 1 astrolog.", visibility: seatId});
+      newState.events.push({text: "Wśród " + names + " jest dokładnie 1 astrolog.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -664,7 +675,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
           falseData = Math.floor(Math.random() * 3);
         astrologs = falseData;
       }
-      newState.events.push({text: "Wśród wybranych osób jest " + astrologs + " astrologów.", visibility: seatId});
+      newState.events.push({text: "Wśród wybranych osób jest " + astrologs + " astrologów.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -703,7 +714,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
           falseClosest = Math.floor(Math.random() * (newState.seats.length - 1 - astrologs) / 2) + 1;
         closest = falseClosest;
       }
-      newState.events.push({text: "Najbliższy astrolog znajduje się w odległosci " + closest + ".", visibility: seatId});
+      newState.events.push({text: "Najbliższy astrolog znajduje się w odległosci " + closest + ".", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -721,7 +732,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
           falseData = Math.floor(Math.random() * 3);
         astrologs = falseData;
       }
-      newState.events.push({text: "Wokół Ciebie siedzi " + astrologs + " astrologów.", visibility: seatId});
+      newState.events.push({text: "Wokół Ciebie siedzi " + astrologs + " astrologów.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -745,7 +756,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
           falseData = Math.floor(Math.random() * Math.max(2, max));
         pairs = falseData;
       }
-      newState.events.push({text: "Na tym obozie jest " + pairs + " parek astrologów.", visibility: seatId});
+      newState.events.push({text: "Na tym obozie jest " + pairs + " parek astrologów.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -767,11 +778,11 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         result = falseData;
       }
       if (result === "Astrologs")
-        newState.events.push({text: "Wyrzucenie " + newState.seats[selectionA[0]].username + " spowoduje wygraną astrologów.", visibility: seatId});
+        newState.events.push({text: "Wyrzucenie " + newState.seats[selectionA[0]].username + " spowoduje wygraną astrologów.", visibility: recipient});
       else if (result === "Astronoms")
-        newState.events.push({text: "Wyrzucenie " + newState.seats[selectionA[0]].username + " spowoduje wygraną astronomów.", visibility: seatId});
+        newState.events.push({text: "Wyrzucenie " + newState.seats[selectionA[0]].username + " spowoduje wygraną astronomów.", visibility: recipient});
       else
-        newState.events.push({text: "Wyrzucenie " + newState.seats[selectionA[0]].username + " nie spowoduje końca gry.", visibility: seatId});
+        newState.events.push({text: "Wyrzucenie " + newState.seats[selectionA[0]].username + " nie spowoduje końca gry.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -792,9 +803,9 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
       if (lie || shouldGenerateFalseData(newState.seats[seatA]))
         detected = !detected;
       if (detected)
-        newState.events.push({text: "Wśród " + newState.seats[selectionA[0]].username + " i " + newState.seats[selectionA[1]].username + " wykryto astrologa.", visibility: seatId});
+        newState.events.push({text: "Wśród " + newState.seats[selectionA[0]].username + " i " + newState.seats[selectionA[1]].username + " wykryto astrologa.", visibility: recipient});
       else  
-        newState.events.push({text: "Wśród " + newState.seats[selectionA[0]].username + " i " + newState.seats[selectionA[1]].username + " nie wykryto astrologa.", visibility: seatId});
+        newState.events.push({text: "Wśród " + newState.seats[selectionA[0]].username + " i " + newState.seats[selectionA[1]].username + " nie wykryto astrologa.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -829,11 +840,11 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         }
       }
       if (result === 0)
-        newState.events.push({text: "Po prawej i lewej jest tyle samo astrologów.", visibility: seatId});
+        newState.events.push({text: "Po prawej i lewej jest tyle samo astrologów.", visibility: recipient});
       else if (result === 1)
-        newState.events.push({text: "Więcej astrologów znajduje się po prawej stronie.", visibility: seatId});
+        newState.events.push({text: "Więcej astrologów znajduje się po prawej stronie.", visibility: recipient});
       else
-        newState.events.push({text: "Więcej astrologów znajduje się po lewej stronie.", visibility: seatId});
+        newState.events.push({text: "Więcej astrologów znajduje się po lewej stronie.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -874,11 +885,11 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         }
       }
       if (result === 0)
-        newState.events.push({text: "Astrolodzy po prawej i lewej są tak samo blisko.", visibility: seatId});
+        newState.events.push({text: "Astrolodzy po prawej i lewej są tak samo blisko.", visibility: recipient});
       else if (result === 1)
-        newState.events.push({text: "Najbliższy astrolog znajduje się po lewej stronie.", visibility: seatId});
+        newState.events.push({text: "Najbliższy astrolog znajduje się po lewej stronie.", visibility: recipient});
       else
-        newState.events.push({text: "Najbliższy astrolog znajduje się po prawej stronie.", visibility: seatId});
+        newState.events.push({text: "Najbliższy astrolog znajduje się po prawej stronie.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -888,9 +899,9 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
     {
       const status = lie !== (newState.seats[seatA]?.sleepless ?? false) !== (newState.seats[seatA]?.bydlo ?? false);
       if (status)
-        newState.events.push({text: "Jesteś niewyspany.", visibility: seatId});
+        newState.events.push({text: "Jesteś niewyspany.", visibility: recipient});
       else
-        newState.events.push({text: "Nie jesteś niewyspany.", visibility: seatId});
+        newState.events.push({text: "Nie jesteś niewyspany.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -901,6 +912,12 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
   function beginDay()
   {
     setGameState({...gameState, orders: []});
+  }
+
+  function dayBotRoleUse(seat)
+  {
+    setDayBotRoleSeat(seat);
+    setDayBotRoleOpen(true);
   }
 
   const komendantRoles = gameState.seats.filter(s => s.side === "astronom" && s.role !== "Komendant")
@@ -930,11 +947,20 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
           <div>
             {!isNight && !isUser && !isDev && !isVoting && s.id !== me.id && !s.removed && !gameState.ended && <button className="gameButton" onClick={(e) => startVoting(e, s.id)}>Oskarż</button>}
             {!isDev && myAction && !isVoting && canBeSelected.includes(s.seatId) && !s.removed && !gameState.ended && <button className={isSelected.includes(s.seatId) ? "gameActionSelectionTrue" : "gameActionSelectionFalse"} onClick={() => actionTargetSelected(s.seatId)}>Wybierz</button>}
+            {!isNight && s.bot && !s.usedUp && (s.order === -1 || s.falseDayRole) && <button className="gameButton" onClick={() => dayBotRoleUse(s)}>Użyj roli</button>}
           </div>
           <textarea className="gameTextArea"></textarea>
         </div> : 
         null}</div>)}
       </div>
+      <DayBotRoleModal 
+        open={dayBotRoleOpen}
+        onClose={() => {setDayBotRoleOpen(false); setDayBotRoleSeat(null);}}
+        botSeat={dayBotRoleSeat}
+        gameState={gameState}
+        activateAction={activateAction}
+        getTargets={getTargetsForSelection}
+      />
     </>
   )
 }

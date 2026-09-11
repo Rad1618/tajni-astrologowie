@@ -31,7 +31,7 @@
 }
 
 .sidebarBool:disabled {
-    cursor: no-drop;
+    cursor: no-allowed;
 }
 
 .sidebarBoolActive {
@@ -43,7 +43,7 @@
 }
 
 .sidebarBoolActive:disabled {
-    cursor: no-drop;
+    cursor: no-allowed;
 }
 
 .sidebarStandardContainer {
@@ -65,7 +65,7 @@
 }
 
 .sidebarStandardButton:disabled {
-    cursor: no-drop;
+    cursor: no-allowed;
 }
 
 .sidebarTriggerContainer {
@@ -88,7 +88,7 @@
 }
 
 .sidebarTrigger:disabled {
-    cursor: no-drop;
+    cursor: no-allowed;
 }
 
 .buttonIcon {

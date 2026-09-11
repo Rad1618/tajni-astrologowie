@@ -47,6 +47,13 @@
     cursor: pointer;
 }
 
+.modalButton:disabled {
+    cursor: not-allowed;
+    background-color: #a6a6a6;
+    border: solid 1px #9392a1;
+    color: #585858;
+}
+
 .modalButtonYes {
     background-color: rgb(118, 251, 118);
     border: solid 1px rgb(70, 172, 70);
@@ -98,6 +105,11 @@
     border: 1px solid #e3e3e3;
 }
 
+.modalSelect {
+    width: 80%;
+    margin-top: 8px;
+}
+
 .goToTheLeft {
     align-self: flex-start;
     cursor: wait;
@@ -117,7 +129,7 @@
 .sorOptionButton:disabled {
     color: #6f6f6f;
     background-color: #e3e3e3;
-    cursor: no-drop;
+    cursor: no-allowed;
 }
 
 .redText {

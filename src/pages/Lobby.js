@@ -1,9 +1,10 @@
 import { useState } from "react";
 import OftenUsedSetups from "../modals/OftenUsedSetups";
 import { ROLES } from "../data/roles";
+import { Sun, Moon } from "lucide-react";
 import styles from "../styles/lobby.css"
 
-const noBotRoles = ["Komendant", "Zły oboźny", "Manipulator", "Bydło"];
+const noBotRoles = ["Komendant", "Manipulator", "Bydło"];
 
 export default function Lobby({gameState, setGameState, members, options, setOptions})
 {
@@ -196,6 +197,13 @@ export default function Lobby({gameState, setGameState, members, options, setOpt
     setSelectedRoles(roles);
   }
 
+  function getPhaseText(role)
+  {
+    if (role.order === -1)
+      return <><Sun size={12}/>   Zdolność dzienna   <Sun size={12}/></>
+    return <><Moon size={12}/>   Zdolność nocna   <Moon size={12}/></>
+  }
+
   if (!members)
     return null;
 
@@ -213,7 +221,7 @@ export default function Lobby({gameState, setGameState, members, options, setOpt
           <div className="lobbyRoleTop">
             <p className={`roleName ${options.bots > 0 && noBotRoles.includes(role.name) ? "roleNameRed" : ""}`}>{role.name}</p>
             <p className={"roleSide" && (role.side === "astrolog" ? styles.roleAstrolog : undefined)}>{role.side}</p>
-            {role.order != null && <div className="roleTime">{role.order === -1 ? "Zdolność dzienna:" : "Zdolność nocna:"}</div>}
+            {role.order != null && <div className="roleTime">{getPhaseText(role)}</div>}
             <span className="roleDesc">{role.desc}</span>
             <span className="roleLore">{role.lore}</span>
           </div>
