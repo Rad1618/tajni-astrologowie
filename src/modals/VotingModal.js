@@ -3,7 +3,7 @@ import '../styles/modals.css';
 export default function VotingModal({gameState, setGameState, me, options})
 {
   const isActive = gameState?.voting?.active ?? false;
-  const canVote = (!gameState?.seats.filter((s) => s.id === me.id)[0]?.removed || false) ?? false;
+  const canVote = (gameState?.seats.filter((s) => s.id === me.id).length > 0 && !gameState?.seats.filter((s) => s.id === me.id)[0]?.removed) ?? false;
   const alreadyVoted = ((me?.id || null) in (gameState?.voting?.votes || {})) ?? false;
   const targetSeat = gameState?.voting?.target ? gameState.seats.find(s => s.id === gameState.voting.target) || {} : {};
 

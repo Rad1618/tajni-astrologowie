@@ -320,7 +320,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
     }
     else if (role === "Chemik")
     {
-      setActionText("Wybierz 3 osoby i dowiedz się, czy jest wśród nich astrolog.");
+      setActionText("Wybierz 2 osoby i dowiedz się, czy jest wśród nich astrolog.");
       setConfirmButtonVisible(false);
       for (let i = 0; i < gameState.seats.length; i++)
       {

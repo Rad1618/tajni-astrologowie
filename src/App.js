@@ -81,7 +81,7 @@ function App() {
           setGameState(null);
         if ((data.data?.version ?? -1) <= (gameRef.current?.version ?? -2))
           return;
-        if (me.dev)
+        if (meRef.current?.dev)
           console.log(data.data);
         const winStatus = checkWinCondition(data.data);
         setWin(winStatus);
@@ -95,7 +95,7 @@ function App() {
       }
       else if (data.type === "options")
       {
-        if (me?.dev)
+        if (meRef.current?.dev)
           console.log(data.data);
         setOptions(data.data);
       }
