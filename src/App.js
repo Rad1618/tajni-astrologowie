@@ -81,7 +81,7 @@ function App() {
           setGameState(null);
         if ((data.data?.version ?? -1) <= (gameRef.current?.version ?? -2))
           return;
-        if (meRef.current?.dev)
+        // if (meRef.current?.dev)
           console.log(data.data);
         const winStatus = checkWinCondition(data.data);
         setWin(winStatus);

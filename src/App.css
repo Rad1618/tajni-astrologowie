@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  width: max(100%, 1000px);
 }
 
 .App-logo {
@@ -69,7 +70,7 @@
 
 .appGrid {
   display: grid;
-  grid-template-columns: 120px 1fr 120px;
+  grid-template-columns: 130px auto 130px;
   gap: 16px
 }
 

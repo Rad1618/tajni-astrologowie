@@ -8,7 +8,7 @@ export default function RightSidebar({gameState})
   const [helpOpen, setHelpOpen] = useState(false);
 
   return (
-  <div className="sidebarContainer">
+  <div className="sidebarContainer right">
     <div className="sidebarTriggerContainer">
       <button className="sidebarTrigger" onClick={() => {setHelpOpen(true)}}>
         <Ambulance className='buttonIcon'/>

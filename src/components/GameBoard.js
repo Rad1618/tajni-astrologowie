@@ -109,7 +109,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
       const newEvents = [];
       for (let i = 0; i < gameState.seats.length; i++)
       {
-        if (gameState.seats[i].bot && gameState.seats[i].side !== "astrolog")
+        if (gameState.seats[i].bot && gameState.seats[i].side !== "astrolog" && gameState.seats[i].order === -1)
           newEvents.push({text: gameState.seats[i].username + " (" + gameState.seats[i].role + "): Moja rola to " + gameState.seats[i].role, visibility: "all"});
       }
       while (botEvents.length > 0)
@@ -447,16 +447,22 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
       newState.seats[seatA].falseRole = falseRole;
       const dayRole = ROLES.find(r => r.name === falseRole).order === -1;
       newState.seats[seatA].falseDayRole = dayRole;
-      newState.events.push({text: "Moja rola to " + falseRole, visibility: recipient});
       
-      const id = newState.unoccupiedRoles.findIndex(r => r.name === roleA);
+      const id = newState.unoccupiedRoles.findIndex(r => r.name === falseRole);
       if (id !== -1)
         newState.unoccupiedRoles.splice(id, 1);
+
+      if (dayRole)
+        newState.events.push({text: "Moja rola to " + falseRole, visibility: recipient});
+      else
+        roleA = falseRole;
     }
     if (isBot && overt)
     {
       newState.events.push({text: mySeat.username + " nakazuje " + newState.seats[seatA].username + " (" + roleA + ") użyć swojej akcji.", visibility: "all"});
     }
+    const botPrefix = overt ? newState.seats[seatA].username + " (" + roleA + "): " : "";
+
     if (roleA === "Astrolog" || roleA === "Astrolog biurokratyczny")
     {
       if (newState.orders.length > 0)
@@ -518,7 +524,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
     {
       newState.seats[seatA].visible = true;
       newState.seats[seatA].usedUp = true;
-      newState.events.push({text: newState.seats[seatA].username + " ujawnia się, jako " + newState.seats[seatA].role, visibility: "all"});
+      newState.events.push({text: botPrefix + newState.seats[seatA].username + " ujawnia się, jako " + newState.seats[seatA].role, visibility: "all"});
       setGameState(newState);
     }
     else if (roleA === "Mini-Medyk")
@@ -540,7 +546,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         newState.seats[(seatA + 1) % newState.seats.length].sleepless = false;
         newState.seats[(seatA - 1 + newState.seats.length) % newState.seats.length].sleepless = false;
       }
-      newState.events.push({text: "Uleczyłeś " + count + " osób.", visibility: recipient})
+      newState.events.push({text: botPrefix + "Uleczyłeś " + count + " osób.", visibility: recipient})
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -576,7 +582,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
       // Niewyspane bydło udajace wycha poda poprawną informację 0
       if (newState.seats[seatA].sleepless && newState.seats[seatA].bydlo)
         closest = 0;
-      newState.events.push({text: "Najbliższy niewyspany znajduje się w odległosci " + closest + ".", visibility: recipient});
+      newState.events.push({text: botPrefix + "Najbliższy niewyspany znajduje się w odległosci " + closest + ".", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -588,10 +594,10 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         if (!lie && (newState.seats[s].side === "astrolog" || (options.gorszyObozny && shouldGenerateFalseData(newState.seats[seatA]))))
         {
           newState.seats[s].removed = true;
-          newState.events.push({text: newState.seats[s].username + " został wyrzucony z obozu.", visibility: "all"});
+          newState.events.push({text: botPrefix + newState.seats[s].username + " został wyrzucony z obozu.", visibility: "all"});
         }
         else
-          newState.events.push({text: newState.seats[s].username + " nie został wyrzucony z obozu.", visibility: recipient});
+          newState.events.push({text: botPrefix + newState.seats[s].username + " nie został wyrzucony z obozu.", visibility: recipient});
       });
       newState.seats[seatA].usedUp = true;
       setGameState(newState);
@@ -610,7 +616,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         while (role === "Kwatermistrz" || neighbours.includes(role))
           role = newState.allRoles[Math.floor(Math.random() * newState.allRoles.length)].name;
       }
-      newState.events.push({text: "Obok Ciebie znajduje się " + role + ".", visibility: recipient});
+      newState.events.push({text: botPrefix + "Obok Ciebie znajduje się " + role + ".", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -622,9 +628,9 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         if (!lie)
           newState.seats[s].sleepless = true;
         if (!lie && !shouldGenerateFalseData(newState.seats[seatA]))
-          newState.events.push({text: newState.seats[s].username + " to " + newState.seats[s].side + ".", visibility: recipient});
+          newState.events.push({text: botPrefix + newState.seats[s].username + " to " + newState.seats[s].side + ".", visibility: recipient});
         else
-          newState.events.push({text: newState.seats[s].username + " to " + (newState.seats[s].side === "astrolog" ? "astronom" : "astrolog") + ".", visibility: recipient});
+          newState.events.push({text: botPrefix + newState.seats[s].username + " to " + (newState.seats[s].side === "astrolog" ? "astronom" : "astrolog") + ".", visibility: recipient});
       });
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
@@ -654,7 +660,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         astrologs += isAstrolog;
       }
       const names = selectedSeats.reduce((text, s) => {return text + s.username + ", "}, "").slice(0, -2);
-      newState.events.push({text: "Wśród " + names + " jest dokładnie 1 astrolog.", visibility: recipient});
+      newState.events.push({text: botPrefix + "Wśród " + names + " jest dokładnie 1 astrolog.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -675,7 +681,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
           falseData = Math.floor(Math.random() * 3);
         astrologs = falseData;
       }
-      newState.events.push({text: "Wśród wybranych osób jest " + astrologs + " astrologów.", visibility: recipient});
+      newState.events.push({text: botPrefix + "Wśród wybranych osób jest " + astrologs + " astrologów.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -714,7 +720,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
           falseClosest = Math.floor(Math.random() * (newState.seats.length - 1 - astrologs) / 2) + 1;
         closest = falseClosest;
       }
-      newState.events.push({text: "Najbliższy astrolog znajduje się w odległosci " + closest + ".", visibility: recipient});
+      newState.events.push({text: botPrefix + "Najbliższy astrolog znajduje się w odległosci " + closest + ".", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -732,7 +738,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
           falseData = Math.floor(Math.random() * 3);
         astrologs = falseData;
       }
-      newState.events.push({text: "Wokół Ciebie siedzi " + astrologs + " astrologów.", visibility: recipient});
+      newState.events.push({text: botPrefix + "Wokół Ciebie siedzi " + astrologs + " astrologów.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -756,7 +762,7 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
           falseData = Math.floor(Math.random() * Math.max(2, max));
         pairs = falseData;
       }
-      newState.events.push({text: "Na tym obozie jest " + pairs + " parek astrologów.", visibility: recipient});
+      newState.events.push({text: botPrefix + "Na tym obozie jest " + pairs + " parek astrologów.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -778,11 +784,11 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         result = falseData;
       }
       if (result === "Astrologs")
-        newState.events.push({text: "Wyrzucenie " + newState.seats[selectionA[0]].username + " spowoduje wygraną astrologów.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Wyrzucenie " + newState.seats[selectionA[0]].username + " spowoduje wygraną astrologów.", visibility: recipient});
       else if (result === "Astronoms")
-        newState.events.push({text: "Wyrzucenie " + newState.seats[selectionA[0]].username + " spowoduje wygraną astronomów.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Wyrzucenie " + newState.seats[selectionA[0]].username + " spowoduje wygraną astronomów.", visibility: recipient});
       else
-        newState.events.push({text: "Wyrzucenie " + newState.seats[selectionA[0]].username + " nie spowoduje końca gry.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Wyrzucenie " + newState.seats[selectionA[0]].username + " nie spowoduje końca gry.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -803,9 +809,9 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
       if (lie || shouldGenerateFalseData(newState.seats[seatA]))
         detected = !detected;
       if (detected)
-        newState.events.push({text: "Wśród " + newState.seats[selectionA[0]].username + " i " + newState.seats[selectionA[1]].username + " wykryto astrologa.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Wśród " + newState.seats[selectionA[0]].username + " i " + newState.seats[selectionA[1]].username + " wykryto astrologa.", visibility: recipient});
       else  
-        newState.events.push({text: "Wśród " + newState.seats[selectionA[0]].username + " i " + newState.seats[selectionA[1]].username + " nie wykryto astrologa.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Wśród " + newState.seats[selectionA[0]].username + " i " + newState.seats[selectionA[1]].username + " nie wykryto astrologa.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -840,11 +846,11 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         }
       }
       if (result === 0)
-        newState.events.push({text: "Po prawej i lewej jest tyle samo astrologów.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Po prawej i lewej jest tyle samo astrologów.", visibility: recipient});
       else if (result === 1)
-        newState.events.push({text: "Więcej astrologów znajduje się po prawej stronie.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Więcej astrologów znajduje się po prawej stronie.", visibility: recipient});
       else
-        newState.events.push({text: "Więcej astrologów znajduje się po lewej stronie.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Więcej astrologów znajduje się po lewej stronie.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -885,11 +891,11 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
         }
       }
       if (result === 0)
-        newState.events.push({text: "Astrolodzy po prawej i lewej są tak samo blisko.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Astrolodzy po prawej i lewej są tak samo blisko.", visibility: recipient});
       else if (result === 1)
-        newState.events.push({text: "Najbliższy astrolog znajduje się po lewej stronie.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Najbliższy astrolog znajduje się po lewej stronie.", visibility: recipient});
       else
-        newState.events.push({text: "Najbliższy astrolog znajduje się po prawej stronie.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Najbliższy astrolog znajduje się po prawej stronie.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
@@ -899,9 +905,9 @@ export default function GameBoard({gameState, setGameState, seat, me, checkWin, 
     {
       const status = lie !== (newState.seats[seatA]?.sleepless ?? false) !== (newState.seats[seatA]?.bydlo ?? false);
       if (status)
-        newState.events.push({text: "Jesteś niewyspany.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Jesteś niewyspany.", visibility: recipient});
       else
-        newState.events.push({text: "Nie jesteś niewyspany.", visibility: recipient});
+        newState.events.push({text: botPrefix + "Nie jesteś niewyspany.", visibility: recipient});
       if (newState.orders.length > 0)
         newState.orders.splice(0, 1);
       newState.seats[seatA].usedUp = true;
